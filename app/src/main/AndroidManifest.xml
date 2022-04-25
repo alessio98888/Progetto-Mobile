@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.guitartrainer">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.GuitarTrainer">
+        <activity
+            android:name=".EarTrainingGuessFunctionOptionsActivity"
+            android:screenOrientation="portrait"
+            android:exported="true" />
+        <activity
+            android:name=".EarTrainingActivity"
+            android:screenOrientation="portrait"
+            android:exported="true" />
+
+        <provider
+            android:name=".ProgrammableMetronomePresetsProvider"
+            android:authorities="com.example.guitartrainer.ProgrammableMetronomePresetsProvider" />
+        <provider
+            android:name=".EarTrainingCardStatsProvider"
+            android:authorities="com.example.guitartrainer.EarTrainingCardStatsProvider" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+
+            <!--
+       the contents of the window are automatically panned so that the current focus is never obscured by the keyboard and users can always see what they are typing.
+                                                                               The keyboard goes away only when "Done" is pressed
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

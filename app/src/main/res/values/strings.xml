@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name" translatable="false">Music Trainer</string>
+    <string name="feature_name_metronome">Metronome</string>
+    <string name="feature_name_ear_training">Ear Training</string>
+    <string name="metronome_tab_basic_metronome">Basic</string>
+    <string name="metronome_tab_programmable_metronome">Programmable</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bpm" translatable="false">BPM</string>
+    <string name="metronome_default_bpm" translatable="false">150</string>
+    <string name="plus_one_bpm">Plus one bpm</string>
+    <string name="metronome_play">Play</string>
+    <string name="minus_one_bpm">Minus one bpm</string>
+    <string name="from_bpm_label">From</string>
+    <string name="to_bpm_label">To</string>
+    <string name="seconds_bpm_label">Seconds</string>
+    <string name="mode_bpm_label">Mode</string>
+    <string name="mode_loop">Loop</string>
+    <string name="mode_stop_reset">Reset and Stop</string>
+    <string name="mode_stay">Stay</string>
+    <string name="programmable_metronome_stop_button_label">Stop and Reset</string>
+    <string name="programmable_metronome_go_button_label">Go</string>
+    <string name="programmable_metronome_pause_resume_button_label">Pause/Resume</string>
+
+    <string name="basic_metronome_bpm_key" translatable="false">basic_metronome_bpm_key</string>
+    <string name="programmable_metronome_from_bpm_key" translatable="false">programmable_metronome_from_bpm_key</string>
+    <string name="programmable_metronome_to_bpm_key" translatable="false">programmable_metronome_to_bpm_key</string>
+    <string name="programmable_metronome_seconds_key" translatable="false">programmable_metronome_seconds_key</string>
+    <string name="programmable_metronome_mode_key" translatable="false">programmable_metronome_mode_key</string>
+    <string name="programmable_metronome_currentPreset_key" translatable="false">programmable_metronome_currentPreset_key </string>
+    <string name="save_preset">Save Preset</string>
+    <string name="delete_preset">Delete Preset</string>
+    <string name="load_preset">Load Preset</string>
+    <string name="cancel">Cancel</string>
+    <string name="save_preset_editText_placeholder">Preset Name</string>
+    <string name="save_as_new_checkbox">Save as new</string>
+    <string name="save_preset_menuitem_label">Save preset</string>
+    <string name="delete_preset_menuitem_label">Delete Preset</string>
+    <string name="load_preset_menuitem_label">Load Preset</string>
+
+    <string name="toast_new_preset_saved">New Preset Saved!</string>
+    <string name="toast_update_preset">Preset Updated!</string>
+    <string name="toast_insert_preset_error">Error Inserting Preset</string>
+    <string name="toast_loaded_preset">Preset Loaded!</string>
+    <string name="toast_delete_preset">Preset Deleted!</string>
+    <string name="toast_no_saved_presets">No Saved Presets!</string>
+    <string name="toast_empty_preset_name">Empty Preset Name!</string>
+    <string name="programmable_metronome_current_preset">Current Preset: %1$s</string>
+    <string name="title_activity_ear_training">EarTrainingActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="one_octave">One Octave</string>
+    <string name="c_major_scale">C Major Scale</string>
+    <string name="many_octaves">Many Octaves</string>
+    <string name="_1" translatable="false">1</string>
+    <string name="_2" translatable="false">2</string>
+    <string name="_3" translatable="false">3</string>
+    <string name="_4" translatable="false">4</string>
+    <string name="_5" translatable="false">5</string>
+    <string name="_6" translatable="false">6</string>
+    <string name="_7" translatable="false">7</string>
+    <string name="_14_20" translatable="false">14/20</string>
+    <string name="ear_training_round_text" translatable="false">%1$s/%2$s</string>
+    <string name="ear_training_success_perc_text" translatable="false">%1$d%%</string>
+    <string name="_80" translatable="false">80%</string>
+    <string name="earTrainingIncorrectAnswers" translatable="false">-%1$d</string>
+    <string name="earTrainingCorrectAnswers" translatable="false">+%1$d</string>
+    <string name="i_iv_i_v_i" translatable="false">I-IV-I-V-I</string>
+    <string name="ear_training_best">Best: </string>
+    <string name="repeat_note">Repeat Note</string>
+    <string name="repeat">Repeat</string>
+    <string name="add_new_custom_level">Add New Custom Level</string>
+    <string name="root_note">Root Note</string>
+    <string name="scale_mode">Scale Mode</string>
+    <string name="progression">Progression</string>
+    <string name="octaves">Octaves</string>
+    <string name="custom_level_added">Custom Level Added!</string>
+    <string name="custom_level_already_present">Custom Level Already Present!</string>
+    <string name="delete_level">Delete Level</string>
+    <string name="guess_function_options">Options</string>
+    <string name="voice_synthesizer">Voice Synthesizer Mode</string>
+    <string name="guess_function_options_text">Guess Function Options</string>
+    <string name="save_and_exit">Save and Exit</string>
+    <string name="automatic_answers_with_voice">Automatic answers with voice</string>
+    <string name="ear_training_giant_function_value_text" translatable="false">%1$d</string>
+    <string name="level_completed">Level Completed!</string>
+    <string name="_continue">continue</string>
+</resources>

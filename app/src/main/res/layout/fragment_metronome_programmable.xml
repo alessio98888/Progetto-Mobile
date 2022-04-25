@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/programmable_metronome_main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="5dp"
+    android:background="#301D1D"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_chainStyle="spread"
+    app:layout_constraintStart_toStartOf="parent"
+    tools:context=".MetronomeProgrammable">
+
+
+    <Button
+        android:id="@+id/pauseResumeButton"
+        android:layout_width="273dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#2D3891"
+        android:text="@string/programmable_metronome_pause_resume_button_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/StopButton" />
+
+    <TextView
+        android:id="@+id/from_bpm_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/from_bpm_editText"
+        android:text="@string/from_bpm_label"
+        android:textColor="#CAC2C2"
+        android:textSize="@dimen/programmable_metronome_label_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_from_minus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/minus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/minus"
+        app:layout_constraintEnd_toStartOf="@id/from_bpm_editText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/from_bpm_textView" />
+
+    <com.example.guitartrainer.CustomEditText
+        android:id="@+id/from_bpm_editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:maxLength="3"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/programmable_metronome_editBpm_font_size"
+        app:layout_constraintEnd_toStartOf="@id/programmable_metronome_from_plus"
+        app:layout_constraintStart_toEndOf="@id/programmable_metronome_from_minus"
+        app:layout_constraintTop_toBottomOf="@id/from_bpm_textView"
+        tools:ignore="DuplicateSpeakableTextCheck" />
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_from_plus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/plus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/plus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/from_bpm_editText"
+        app:layout_constraintTop_toBottomOf="@id/from_bpm_textView"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+
+    <TextView
+        android:id="@+id/to_bpm_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/programmable_metronome_row_spacing"
+        android:labelFor="@id/to_bpm_editText"
+        android:text="@string/to_bpm_label"
+        android:textColor="#CAC2C2"
+        android:textSize="@dimen/programmable_metronome_label_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/from_bpm_editText" />
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_to_minus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/minus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/minus"
+        app:layout_constraintEnd_toStartOf="@id/to_bpm_editText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/to_bpm_textView" />
+
+    <com.example.guitartrainer.CustomEditText
+        android:id="@+id/to_bpm_editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:maxLength="3"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/programmable_metronome_editBpm_font_size"
+        app:layout_constraintEnd_toStartOf="@id/programmable_metronome_to_plus"
+        app:layout_constraintStart_toEndOf="@id/programmable_metronome_to_minus"
+        app:layout_constraintTop_toBottomOf="@id/to_bpm_textView" />
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_to_plus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/plus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/plus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/to_bpm_editText"
+        app:layout_constraintTop_toBottomOf="@id/to_bpm_textView"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+
+    <TextView
+        android:id="@+id/seconds_bpm_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/programmable_metronome_row_spacing"
+        android:labelFor="@id/seconds_editText"
+        android:text="@string/seconds_bpm_label"
+        android:textColor="#CAC2C2"
+        android:textSize="@dimen/programmable_metronome_label_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/to_bpm_editText" />
+
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_seconds_minus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/minus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/minus"
+        app:layout_constraintEnd_toStartOf="@id/seconds_editText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seconds_bpm_textView" />
+
+    <com.example.guitartrainer.CustomEditText
+        android:id="@+id/seconds_editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:maxLength="3"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/programmable_metronome_editBpm_font_size"
+        app:layout_constraintEnd_toStartOf="@id/programmable_metronome_seconds_plus"
+        app:layout_constraintStart_toEndOf="@id/programmable_metronome_seconds_minus"
+        app:layout_constraintTop_toBottomOf="@id/seconds_bpm_textView" />
+
+    <ImageButton
+        android:id="@+id/programmable_metronome_seconds_plus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/plus_one_bpm"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        android:scaleX="@dimen/programmable_metronome_plus_minus_scaleX"
+        android:scaleY="@dimen/programmable_metronome_plus_minus_scaleY"
+        android:src="@drawable/plus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seconds_editText"
+        app:layout_constraintTop_toBottomOf="@id/seconds_bpm_textView"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+
+    <TextView
+        android:id="@+id/mode_bpm_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:labelFor="@id/ModesSpinner"
+        android:text="@string/mode_bpm_label"
+        android:textColor="#CAC2C2"
+        android:textSize="@dimen/programmable_metronome_label_font_size"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seconds_editText"
+        app:layout_optimizationLevel="chains" />
+
+
+    <Spinner
+        android:id="@+id/ModesSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#F2EAFA"
+        android:foregroundTint="#FBFBFB"
+        android:gravity="right"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@id/StopButton"
+        app:layout_constraintStart_toEndOf="@id/mode_bpm_textView"
+        app:layout_constraintTop_toBottomOf="@id/seconds_editText"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/StopButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="#431313"
+        android:text="@string/programmable_metronome_stop_button_label"
+        app:layout_constraintEnd_toStartOf="@id/GoButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mode_bpm_textView" />
+
+    <Button
+        android:id="@+id/GoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#28470D"
+        android:text="@string/programmable_metronome_go_button_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/StopButton"
+        app:layout_constraintTop_toBottomOf="@id/mode_bpm_textView" />
+
+
+    <TextView
+        android:id="@+id/ActualBpmTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="130"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/programmable_metronome_actualBpm_fontSize"
+        app:layout_constraintBottom_toTopOf="@+id/currentPresetTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bpmText"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pauseResumeButton" />
+
+    <TextView
+        android:id="@+id/bpmText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bpm"
+        android:textColor="#C3BCBC"
+        app:layout_constraintBaseline_toBaselineOf="@id/ActualBpmTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ActualBpmTextView"
+        app:layout_constraintTop_toBottomOf="@id/StopButton" />
+
+    <TextView
+        android:id="@+id/currentPresetTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Current preset: Nuovo Preset"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

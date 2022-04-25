@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="feature_button_side_margin_dp">20</integer>
+    <integer name="feature_button_top_bottom_margin_dp">10</integer>
+    <integer name="feature_button_padding_left_dp">30</integer>
+    <integer name="feature_button_padding_right_dp">30</integer>
+    <integer name="feature_button_padding_top_dp">30</integer>
+    <integer name="feature_button_padding_bottom_dp">30</integer>
+</resources>

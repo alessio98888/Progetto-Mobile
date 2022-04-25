@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ear_training_nav"
+    app:startDestination="@id/earTrainingMainPage">
+
+    <fragment
+        android:id="@+id/earTrainingMainPage"
+        android:name="com.example.guitartrainer.EarTrainingMainPage"
+        android:label="EarTrainingMainPage" >
+        <action
+            android:id="@+id/action_earTrainingMainPage_to_earTrainingExerciseExecutionPage"
+            app:destination="@id/earTrainingExerciseExecutionPage" />
+        <argument
+            android:name="successPerc"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/earTrainingExerciseExecutionPage"
+        android:name="com.example.guitartrainer.EarTrainingGuessFunctionExecutionPage"
+        android:label="fragment_ear_training_exercise_execution_page"
+        tools:layout="@layout/fragment_ear_training_exercise_execution_page" >
+        <action
+            android:id="@+id/action_earTrainingExerciseExecutionPage_to_earTrainingMainPage"
+            app:destination="@id/earTrainingMainPage" />
+        <argument
+            android:name="ear_training_option_index"
+            app:argType="integer" />
+        <argument
+            android:name="musicalProgression"
+            app:argType="integer" />
+        <argument
+            android:name="rootNotes"
+            app:argType="integer[]" />
+        <argument
+            android:name="scaleMode"
+            app:argType="integer" />
+        <argument
+            android:name="cardUniqueId"
+            app:argType="string" />
+        <argument
+            android:name="levelType"
+            app:argType="integer" />
+        <argument
+            android:name="automaticAnswersWithVoice"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+</navigation>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="programmable_metronome_row_spacing">40dp</dimen>
+    <dimen name="programmable_metronome_label_font_size">24sp</dimen>
+    <dimen name="programmable_metronome_editBpm_font_size">20sp</dimen>
+    <dimen name="programmable_metronome_plus_minus_scaleX">1</dimen>
+    <dimen name="programmable_metronome_plus_minus_scaleY">1</dimen>
+    <dimen name="programmable_metronome_plus_start">10dp</dimen>
+    <dimen name="programmable_metronome_minus_start">10dp</dimen>
+    <dimen name="programmable_metronome_plus_end">10dp</dimen>
+    <dimen name="programmable_metronome_minus_end">10dp</dimen>
+    <dimen name="programmable_metronome_startLabel_start">10dp</dimen>
+    <dimen name="programmable_metronome_actualBpm_fontSize">35sp</dimen>
+
+</resources>

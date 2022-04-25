@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/home2">
+
+    <fragment
+        android:id="@+id/home2"
+        android:name="com.example.guitartrainer.Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home2_to_metronome"
+            app:destination="@id/metronome" />
+    </fragment>
+    <fragment
+        android:id="@+id/metronome"
+        android:name="com.example.guitartrainer.Metronome"
+        android:label="fragment_metronome">
+        <action
+            android:id="@+id/action_metronome_to_home2"
+            app:destination="@id/home2" />
+    </fragment>
+</navigation>
