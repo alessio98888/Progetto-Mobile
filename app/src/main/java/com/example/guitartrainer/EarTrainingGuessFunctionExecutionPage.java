@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -69,8 +70,8 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
     private int successPerc;
 
-    private int notePlayersPrepared = 0;
-    private int progressionPlayersPrepared = 0;
+    private final AtomicInteger notePlayersPrepared = new AtomicInteger(0);
+    private final AtomicInteger progressionPlayersPrepared = new AtomicInteger(0);
 
     private int numberOfNotePlayersToInit;
     private Vector<Vector<MediaPlayer>> notePlayers;
@@ -368,17 +369,27 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                     MusicalProgression.getResId(rootNotesNames.get(i), progressionId, true,
                             scaleMode);
 
-            MediaPlayer progressionPlayer =
-                    MediaPlayerUtils.createMediaPlayerAsync(getContext(), progressionResId);
+            AssetFileDescriptor afd;
+            MediaPlayer progressionPlayer = new MediaPlayer();
 
+            try {
+                afd = getContext().getResources().openRawResourceFd(progressionResId);
+
+                progressionPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+
+                afd.close();
+            } catch (IOException | NullPointerException e) {
+                e.printStackTrace();
+            }
             progressionPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
                 @Override
                 public void onPrepared(MediaPlayer player) {
-                    progressionPlayersPrepared+=1;
+                    progressionPlayersPrepared.incrementAndGet();
                     playFirstRound();
                 }
             });
+            progressionPlayer.prepareAsync();
 
             progressionPlayers.put(rootNotesNames.get(i), progressionPlayer);
 
@@ -433,16 +444,17 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                     } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
                     }
-                    notePlayer.prepareAsync();
                     notePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
                         @Override
                         public void onPrepared(MediaPlayer player) {
-                            notePlayersPrepared += 1;
+                            notePlayersPrepared.incrementAndGet();
                             playFirstRound();
                         }
 
                     });
+
+                    notePlayer.prepareAsync();
                     r.add(notePlayer);
                     numberOfNotePlayersToInit++;
                 } else {
@@ -478,11 +490,11 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     }
 
     public boolean isNotePlayersReady(){
-       return numberOfNotePlayersToInit == notePlayersPrepared;
+       return numberOfNotePlayersToInit == notePlayersPrepared.get();
     }
 
     public boolean isProgressionsPlayersReady(){
-        return rootNotesNames.size() == progressionPlayersPrepared;
+        return rootNotesNames.size() == progressionPlayersPrepared.get();
     }
 
     public MusicalNote.MusicalNoteName getRandomMusicalNote() {
