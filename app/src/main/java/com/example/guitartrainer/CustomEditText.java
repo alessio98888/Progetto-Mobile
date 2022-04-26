@@ -43,7 +43,7 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText 
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
             // User has pressed Back key. Do not hide when keyboard is visible.
-            // Hides only when "Done" is pressed.
+            // Hides only when Done is pressed.
             WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(getRootView());
             boolean keyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
             if (keyboardVisible){

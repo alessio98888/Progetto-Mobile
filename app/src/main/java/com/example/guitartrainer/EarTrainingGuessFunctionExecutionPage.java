@@ -474,7 +474,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     }
 
     public MediaPlayer getNotePlayer(int octave, int noteIndex){
-
         return notePlayers.get(octave- MIN_OCTAVE_SUPPORTED).get(noteIndex);
     }
 
