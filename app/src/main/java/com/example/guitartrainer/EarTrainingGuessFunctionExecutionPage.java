@@ -1,5 +1,6 @@
 package com.example.guitartrainer;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -12,8 +13,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -21,17 +26,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -91,7 +101,9 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     private ArrayList<Button> answerButtons;
 
     private TextView giantFunctionNumberText;
-
+    private ProgressBar progressBar;
+    private HandlerThread handlerThread;
+    private Activity mActivity;
     private final int DEFAULT_OCTAVE = 4;
 
     @Override
@@ -105,23 +117,23 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         return returnView;
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         canAnswer = false;
 
+
         setTextViews();
         setAnswerButtons();
         setRepeatButtons();
-
+        setTextViewsVisibilityState(false);
+        setAllButtonsVisibilityState(false);
         assert getArguments() != null;
         automaticAnswersWithVoice = getArguments().getBoolean(
                 "automaticAnswersWithVoice",
                 false);
 
         if (automaticAnswersWithVoice) {
-            setTextViewsInvisible();
-            setAllButtonsInvisible();
+
             initTextToSpeech();
         }
 
@@ -143,16 +155,176 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
             giantFunctionNumberText.setVisibility(View.INVISIBLE);
         }
 
-        initProgressionPlayers();
-        initNotePlayers();
+        progressBar = getView().findViewById(R.id.progressBar);
+        progressBar.setProgress(0);
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handlerThread = new HandlerThread("MyHandlerThread");
+        handlerThread.start();
+        Looper looper = handlerThread.getLooper();
+        Handler handlerForBackgroundThread = new Handler(looper);
+        handlerForBackgroundThread.post(new Runnable() {
+            @Override
+            public void run() {
+                //Background work here
+                progressionPlayers = new HashMap<>();
+
+                progressionId = MusicalProgression.MusicalProgressionId.values()[
+                        getArguments().getInt("musicalProgression")];
+
+                int[] rootNotesArray = getArguments().getIntArray("rootNotes");
+                rootNotesNames = MusicalNote.toMusicalNotesNames(
+                        (ArrayList<Integer>) Arrays.stream(rootNotesArray).boxed().collect(Collectors.toList()));
+
+                for(int i = 0; i< rootNotesNames.size(); i++) {
+                    int progressionResId =
+                            MusicalProgression.getResId(rootNotesNames.get(i), progressionId, true,
+                                    scaleMode);
+
+                    AssetFileDescriptor afd;
+                    MediaPlayer progressionPlayer = new MediaPlayer();
+
+                    try {
+                        afd = getContext().getResources().openRawResourceFd(progressionResId);
+
+                        progressionPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+
+                        afd.close();
+                    } catch (IOException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                    progressionPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+                        @Override
+                        public void onPrepared(MediaPlayer player) {
+                            progressionPlayersPrepared.incrementAndGet();
+                            int progress = (int) (((float)
+                                    (notePlayersPrepared.get()+progressionPlayersPrepared.get()) /
+                                    (rootNotesNames.size()+numberOfNotePlayersToInit))*100);
+
+                            //Log.d("Thread main", String.valueOf(Thread.currentThread().equals(
+                            // Looper.getMainLooper().getThread() )));
+                            handler.post(() -> progressBar.setProgress(progress));
+
+                            if ((notePlayersPrepared.get() == numberOfNotePlayersToInit) &&
+                                    (progressionPlayersPrepared.get() == rootNotesNames.size())) {
+                                handler.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                            }
+                        }
+                    });
+
+                    progressionPlayers.put(rootNotesNames.get(i), progressionPlayer);
+
+                }
+                numberOfNotePlayersToInit = 0;
+                notePlayers = new Vector<>();
+                List<String> noteNames = MusicalNote.getNoteNames();
+
+                boolean allNotes = rootNotesNames.size() == noteNames.size();
+                ArrayList<MusicalNote.MusicalNoteName> scalesAllPlayableNotes = null;
+
+                if(!allNotes){
+                    scalesAllPlayableNotes = new ArrayList<>();
+                    for(int i=0; i< rootNotesNames.size(); i++){
+                        scalesAllPlayableNotes.addAll(MusicalScale.getScaleNotes(rootNotesNames.get(i),
+                                scaleMode));
+                    }
+                }
+
+                for(int i = MIN_OCTAVE_SUPPORTED; i<= MAX_OCTAVE_SUPPORTED; i++){
+                    Vector<MediaPlayer> r=new Vector<>();
+                    Integer noteId = null;
+
+                    for(int j=0;j<noteNames.size();j++){
+                        MusicalNote.MusicalNoteName noteName =
+                                MusicalNote.MusicalNoteName.valueOf(noteNames.get(j));
+
+                        // Add player only if the note can be played with current level options
+                        if (allNotes || scalesAllPlayableNotes.contains(noteName)){
+                            try {
+                                noteId = R.raw.class.getField(
+                                        noteNames.get(j) + Integer.toString(i)
+                                ).getInt(null);
+
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+
+                            AssetFileDescriptor afd;
+                            MediaPlayer notePlayer = new MediaPlayer();
+
+                            try {
+                                afd = getContext().getResources().openRawResourceFd(noteId);
+
+                                notePlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(),
+                                        afd.getLength());
+
+                                afd.close();
+                            } catch (IOException | NullPointerException e) {
+                                e.printStackTrace();
+                            }
+                            notePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer player) {
+                                    notePlayersPrepared.incrementAndGet();
+                                    int progress = (int) (((float)
+                                            (notePlayersPrepared.get()+progressionPlayersPrepared.get()) /
+                                            (rootNotesNames.size()+numberOfNotePlayersToInit))*100);
+
+                                    //Log.d("Thread main", String.valueOf(Thread.currentThread().equals(
+                                    // Looper.getMainLooper().getThread() )));
+                                    handler.post(() -> progressBar.setProgress((int) progress));
+
+                                    if ((notePlayersPrepared.get() == numberOfNotePlayersToInit) &&
+                                            (progressionPlayersPrepared.get() == rootNotesNames.size())) {
+
+                                        handler.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                                    }
+                                }
+
+                            });
+
+                            r.add(notePlayer);
+                            numberOfNotePlayersToInit++;
+                        } else {
+                            r.add(null);
+                        }
+                    }
+                    notePlayers.add(r);
+                }
+
+                for(Vector<MediaPlayer> r : notePlayers){
+                    for(MediaPlayer notePlayer : r){
+                        if (notePlayer != null) {
+                            try {
+                                notePlayer.prepare();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+                for(MediaPlayer player : progressionPlayers.values()){
+                    try {
+                        player.prepare();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+        });
     }
 
-    public void setAllButtonsInvisible(){
+    public void setAllButtonsVisibilityState(boolean visible){
+        int visState = visible ? View.VISIBLE : View.INVISIBLE;
         for (int i=0; i<answerButtons.size(); i++){
-            answerButtons.get(i).setVisibility(View.INVISIBLE);
+            answerButtons.get(i).setVisibility(visState);
         }
-        repeatButton.setVisibility(View.INVISIBLE);
-        repeatNoteButton.setVisibility(View.INVISIBLE);
+        repeatButton.setVisibility(visState);
+        repeatNoteButton.setVisibility(visState);
     }
 
     public void setRepeatButtonListeners(){
@@ -173,6 +345,16 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
     public void playFirstRound(){
         if (isNotePlayersReady() && isProgressionsPlayersReady()) {
+
+            if(!isAdded()){ // necessary because the user can press the back button while the handler
+                            // thread for the media loading is running, and can happen that the handler post to
+                            // the main thread happens after the fragment has been detached (isAdded = false)
+                return;
+            }
+            handlerThread.quit();
+            progressBar.setVisibility(View.INVISIBLE);
+            setTextViewsVisibilityState(true);
+            setAllButtonsVisibilityState(true);
             playNextRound();
         }
     }
@@ -354,117 +536,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         return canPlayNote;
     }
 
-    public void initProgressionPlayers(){
-        progressionPlayers = new HashMap<>();
-
-        progressionId = MusicalProgression.MusicalProgressionId.values()[
-                getArguments().getInt("musicalProgression")];
-
-        int[] rootNotesArray = getArguments().getIntArray("rootNotes");
-        rootNotesNames = MusicalNote.toMusicalNotesNames(
-                (ArrayList<Integer>) Arrays.stream(rootNotesArray).boxed().collect(Collectors.toList()));
-
-        for(int i = 0; i< rootNotesNames.size(); i++){
-            int progressionResId =
-                    MusicalProgression.getResId(rootNotesNames.get(i), progressionId, true,
-                            scaleMode);
-
-            AssetFileDescriptor afd;
-            MediaPlayer progressionPlayer = new MediaPlayer();
-
-            try {
-                afd = getContext().getResources().openRawResourceFd(progressionResId);
-
-                progressionPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-
-                afd.close();
-            } catch (IOException | NullPointerException e) {
-                e.printStackTrace();
-            }
-            progressionPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                @Override
-                public void onPrepared(MediaPlayer player) {
-                    progressionPlayersPrepared.incrementAndGet();
-                    playFirstRound();
-                }
-            });
-            progressionPlayer.prepareAsync();
-
-            progressionPlayers.put(rootNotesNames.get(i), progressionPlayer);
-
-        }
-    }
-
-    public void initNotePlayers() {
-        numberOfNotePlayersToInit = 0;
-        notePlayers = new Vector<>();
-        List<String> noteNames = MusicalNote.getNoteNames();
-
-        boolean allNotes = rootNotesNames.size() == noteNames.size();
-        ArrayList<MusicalNote.MusicalNoteName> scalesAllPlayableNotes = null;
-
-        if(!allNotes){
-            scalesAllPlayableNotes = new ArrayList<>();
-            for(int i=0; i< rootNotesNames.size(); i++){
-                scalesAllPlayableNotes.addAll(MusicalScale.getScaleNotes(rootNotesNames.get(i),
-                        scaleMode));
-            }
-        }
-
-        for(int i = MIN_OCTAVE_SUPPORTED; i<= MAX_OCTAVE_SUPPORTED; i++){
-            Vector<MediaPlayer> r=new Vector<>();
-            Integer noteId = null;
-
-            for(int j=0;j<noteNames.size();j++){
-                MusicalNote.MusicalNoteName noteName =
-                        MusicalNote.MusicalNoteName.valueOf(noteNames.get(j));
-
-                // Add player only if the note can be played with current level options
-                if (allNotes || scalesAllPlayableNotes.contains(noteName)){
-                    try {
-                        noteId = R.raw.class.getField(
-                                noteNames.get(j) + Integer.toString(i)
-                        ).getInt(null);
-
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-
-                    AssetFileDescriptor afd;
-                    MediaPlayer notePlayer = new MediaPlayer();
-
-                    try {
-                        afd = getContext().getResources().openRawResourceFd(noteId);
-
-                        notePlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(),
-                                afd.getLength());
-
-                        afd.close();
-                    } catch (IOException | NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                    notePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                        @Override
-                        public void onPrepared(MediaPlayer player) {
-                            notePlayersPrepared.incrementAndGet();
-                            playFirstRound();
-                        }
-
-                    });
-
-                    notePlayer.prepareAsync();
-                    r.add(notePlayer);
-                    numberOfNotePlayersToInit++;
-                } else {
-                    r.add(null);
-                }
-            }
-            notePlayers.add(r);
-        }
-    }
-
     public void releaseProgressionPlayers(){
         for(int i = 0; i< rootNotesNames.size(); i++){
             MediaPlayer player = progressionPlayers.get(rootNotesNames.get(i));
@@ -539,6 +610,15 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         setCorrectIncorrectAnswers(correctAnswers, incorrectAnswers);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Activity){
+            mActivity =(Activity) context;
+        }
+    }
+
     public void setCorrectIncorrectAnswers(int correctAnswers, int incorrectAnswers){
         this.correctAnswers = correctAnswers;
         this.incorrectAnswers = incorrectAnswers;
@@ -555,7 +635,9 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     public void setRound(int round){
         this.round = round;
 
-        String text = String.format(getResources().getString(R.string.ear_training_round_text),
+        String text = "";
+
+         text = String.format(getResources().getString(R.string.ear_training_round_text),
                 Integer.toString(round), Integer.toString(MAX_ROUND));
         roundText.setText(text);
     }
@@ -626,10 +708,11 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         });
     }
 
-    public void setTextViewsInvisible(){
-        successPercText.setVisibility(View.INVISIBLE);
-        correctAnswersText.setVisibility(View.INVISIBLE);
-        incorrectAnswersText.setVisibility(View.INVISIBLE);
-        roundText.setVisibility(View.INVISIBLE);
+    public void setTextViewsVisibilityState(boolean visible){
+        int visState = visible ? View.VISIBLE : View.INVISIBLE;
+        successPercText.setVisibility(visState);
+        correctAnswersText.setVisibility(visState);
+        incorrectAnswersText.setVisibility(visState);
+        roundText.setVisibility(visState);
     }
 }
