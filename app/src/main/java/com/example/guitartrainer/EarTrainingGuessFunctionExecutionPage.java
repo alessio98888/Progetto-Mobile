@@ -103,7 +103,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     private TextView giantFunctionNumberText;
     private ProgressBar progressBar;
     private HandlerThread handlerThread;
-    private Activity mActivity;
     private final int DEFAULT_OCTAVE = 4;
 
     @Override
@@ -608,15 +607,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     public void setScoreStats(int perc, int correctAnswers, int incorrectAnswers){
         setSuccessPerc(perc, successPercText);
         setCorrectIncorrectAnswers(correctAnswers, incorrectAnswers);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof Activity){
-            mActivity =(Activity) context;
-        }
     }
 
     public void setCorrectIncorrectAnswers(int correctAnswers, int incorrectAnswers){
