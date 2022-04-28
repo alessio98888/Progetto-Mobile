@@ -1,6 +1,5 @@
 package com.example.guitartrainer;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.Handler;
@@ -32,23 +30,18 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link EarTrainingGuessFunctionExecutionPage} factory method to
- * create an instance of this fragment.
+ * Game for guessing the function of a note.
+ *
+ * All MediaPlayer listeners are registered on the worker thread.
  */
 public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     private boolean automaticAnswersWithVoice;
@@ -80,8 +73,8 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
     private int successPerc;
 
-    private final AtomicInteger notePlayersPrepared = new AtomicInteger(0);
-    private final AtomicInteger progressionPlayersPrepared = new AtomicInteger(0);
+    private int notePlayersPrepared = 0;
+    private int progressionPlayersPrepared = 0;
 
     private int numberOfNotePlayersToInit;
     private Vector<Vector<MediaPlayer>> notePlayers;
@@ -102,7 +95,8 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
     private TextView giantFunctionNumberText;
     private ProgressBar progressBar;
-    private HandlerThread handlerThread;
+    private HandlerThread handlerThreadWorker;
+    private Handler handlerMain;
     private final int DEFAULT_OCTAVE = 4;
 
     @Override
@@ -120,7 +114,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         canAnswer = false;
 
-
         setTextViews();
         setAnswerButtons();
         setRepeatButtons();
@@ -132,7 +125,6 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                 false);
 
         if (automaticAnswersWithVoice) {
-
             initTextToSpeech();
         }
 
@@ -157,10 +149,10 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         progressBar = getView().findViewById(R.id.progressBar);
         progressBar.setProgress(0);
 
-        Handler handler = new Handler(Looper.getMainLooper());
-        handlerThread = new HandlerThread("MyHandlerThread");
-        handlerThread.start();
-        Looper looper = handlerThread.getLooper();
+        handlerMain = new Handler(Looper.getMainLooper());
+        handlerThreadWorker = new HandlerThread("MyHandlerThread");
+        handlerThreadWorker.start();
+        Looper looper = handlerThreadWorker.getLooper();
         Handler handlerForBackgroundThread = new Handler(looper);
         handlerForBackgroundThread.post(new Runnable() {
             @Override
@@ -196,18 +188,18 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
                         @Override
                         public void onPrepared(MediaPlayer player) {
-                            progressionPlayersPrepared.incrementAndGet();
+                            progressionPlayersPrepared+=1;
                             int progress = (int) (((float)
-                                    (notePlayersPrepared.get()+progressionPlayersPrepared.get()) /
+                                    (notePlayersPrepared+progressionPlayersPrepared) /
                                     (rootNotesNames.size()+numberOfNotePlayersToInit))*100);
 
                             //Log.d("Thread main", String.valueOf(Thread.currentThread().equals(
                             // Looper.getMainLooper().getThread() )));
-                            handler.post(() -> progressBar.setProgress(progress));
+                            handlerMain.post(() -> progressBar.setProgress(progress));
 
-                            if ((notePlayersPrepared.get() == numberOfNotePlayersToInit) &&
-                                    (progressionPlayersPrepared.get() == rootNotesNames.size())) {
-                                handler.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                            if ((notePlayersPrepared == numberOfNotePlayersToInit) &&
+                                    (progressionPlayersPrepared == rootNotesNames.size())) {
+                                handlerMain.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
                             }
                         }
                     });
@@ -265,19 +257,19 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                             notePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                 @Override
                                 public void onPrepared(MediaPlayer player) {
-                                    notePlayersPrepared.incrementAndGet();
+                                    notePlayersPrepared+=1;
                                     int progress = (int) (((float)
-                                            (notePlayersPrepared.get()+progressionPlayersPrepared.get()) /
+                                            (notePlayersPrepared+progressionPlayersPrepared) /
                                             (rootNotesNames.size()+numberOfNotePlayersToInit))*100);
 
                                     //Log.d("Thread main", String.valueOf(Thread.currentThread().equals(
                                     // Looper.getMainLooper().getThread() )));
-                                    handler.post(() -> progressBar.setProgress((int) progress));
+                                    handlerMain.post(() -> progressBar.setProgress((int) progress));
 
-                                    if ((notePlayersPrepared.get() == numberOfNotePlayersToInit) &&
-                                            (progressionPlayersPrepared.get() == rootNotesNames.size())) {
+                                    if ((notePlayersPrepared == numberOfNotePlayersToInit) &&
+                                            (progressionPlayersPrepared == rootNotesNames.size())) {
 
-                                        handler.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                                        handlerMain.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
                                     }
                                 }
 
@@ -350,10 +342,12 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                             // the main thread happens after the fragment has been detached (isAdded = false)
                 return;
             }
-            handlerThread.quit();
             progressBar.setVisibility(View.INVISIBLE);
-            setTextViewsVisibilityState(true);
-            setAllButtonsVisibilityState(true);
+
+            if(!automaticAnswersWithVoice){
+                setTextViewsVisibilityState(true);
+                setAllButtonsVisibilityState(true);
+            }
             playNextRound();
         }
     }
@@ -372,6 +366,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                 new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+                // Executes on worker thread
                 playNote(note.getOctave(), note.getNoteName());
             }
         });
@@ -521,6 +516,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
             getNotePlayer(octave,note.ordinal()).setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
+                    // Executes on worker thread
                     if (automaticAnswersWithVoice) {
                         textToSpeech.speak(Integer.toString(currentNoteToGuess.getMusicalFunction()),
                                 TextToSpeech.QUEUE_FLUSH, null,
@@ -560,11 +556,11 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     }
 
     public boolean isNotePlayersReady(){
-       return numberOfNotePlayersToInit == notePlayersPrepared.get();
+       return numberOfNotePlayersToInit == notePlayersPrepared;
     }
 
     public boolean isProgressionsPlayersReady(){
-        return rootNotesNames.size() == progressionPlayersPrepared.get();
+        return rootNotesNames.size() == progressionPlayersPrepared;
     }
 
     public MusicalNote.MusicalNoteName getRandomMusicalNote() {
@@ -635,6 +631,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        handlerThreadWorker.quit();
         releaseNotePlayers();
         releaseProgressionPlayers();
         if(automaticAnswersWithVoice) {
