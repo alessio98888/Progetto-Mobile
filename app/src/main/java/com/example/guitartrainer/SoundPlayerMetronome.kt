@@ -29,6 +29,22 @@ class SoundPlayerMetronome(context: Context, bpm: Int) : Runnable, Observer {
     private var isPlaying = false
     private var interval: Long
     private var soundId = -1
+
+    init {
+        this.bpm = bpm.toDouble()
+        this.context = context
+        soundPool = SoundPool.Builder()
+                .setMaxStreams(1)
+                .setAudioAttributes(AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build())
+                .build()
+        handler = Handler()
+        interval = toInterval(bpm)
+        soundId = soundPool.load(context, R.raw.metronome_beat1, 1)
+    }
+
     fun start(bpm: Int, initialDelay: Int) {
         setBpm(bpm)
         pause()
@@ -79,18 +95,5 @@ class SoundPlayerMetronome(context: Context, bpm: Int) : Runnable, Observer {
         }
     }
 
-    init {
-        this.bpm = bpm.toDouble()
-        this.context = context
-        soundPool = SoundPool.Builder()
-                .setMaxStreams(1)
-                .setAudioAttributes(AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build())
-                .build()
-        handler = Handler()
-        interval = toInterval(bpm)
-        soundId = soundPool.load(context, R.raw.metronome_beat1, 1)
-    }
+
 }
