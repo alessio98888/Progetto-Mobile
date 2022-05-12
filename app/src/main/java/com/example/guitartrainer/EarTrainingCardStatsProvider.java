@@ -201,8 +201,7 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
     public ArrayList<EarTrainingCardStats> getCardStats(){
         ArrayList<EarTrainingCardStats> out = new ArrayList<>();
 
-        String sqlQuery = "SELECT * FROM " + CARD_STATS_TABLE_NAME + " ORDER BY " + CARD_ID_NAME
-                + " ASC ";
+        String sqlQuery = "SELECT * FROM " + CARD_STATS_TABLE_NAME;
 
         Cursor c = db.rawQuery(sqlQuery, null);
 

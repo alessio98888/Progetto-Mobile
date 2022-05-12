@@ -45,7 +45,7 @@ import java.util.ArrayList;
 Alessio Ardu  */
 public class EarTrainingMainPage extends Fragment {
 
-    private final ArrayList<EarTrainingGuessFunctionLevel> CARD_MANAGERS = new ArrayList<>();
+    private ArrayList<EarTrainingGuessFunctionLevel> cardManagers;
 
     private ConstraintLayout parentLayout;
 
@@ -105,7 +105,7 @@ public class EarTrainingMainPage extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+        cardManagers = new ArrayList<>();
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
@@ -120,7 +120,9 @@ public class EarTrainingMainPage extends Fragment {
 
         getCustomLevelsFromProvider();
         addCardCustomLevelAdder();
-        overrideBackButtonBehaviour();
+
+        // Just destroy(finish) activity when back pressed
+        overrideBackButtonBehaviour(); // Preventing bug: back pressed after level completion
 
     }
 
@@ -146,8 +148,10 @@ public class EarTrainingMainPage extends Fragment {
     }
 
     public void overrideBackButtonBehaviour() {
+        // Lines necessary in order to set the key listener
         this.getView().setFocusableInTouchMode(true);
         this.getView().requestFocus();
+
         this.getView().setOnKeyListener( new View.OnKeyListener() {
             @Override
             public boolean onKey( View v, int keyCode, KeyEvent event )
@@ -165,17 +169,17 @@ public class EarTrainingMainPage extends Fragment {
 
         ConstraintSet set = new ConstraintSet();
         EarTrainingGuessFunctionLevel managerToDelete;
-        for (int i = 0; i< CARD_MANAGERS.size(); i++) {
-            managerToDelete = CARD_MANAGERS.get(i);
+        for (int i = 0; i< cardManagers.size(); i++) {
+            managerToDelete = cardManagers.get(i);
             if (managerToDelete.getUniqueCardId().equals(levelToDelete.getUniqueCardId())) {
                 CardView cardToDelete = managerToDelete.getCardView();
                 ((ViewManager)cardToDelete.getParent()).removeView(cardToDelete);
 
                 set.clone(parentLayout);
-                CardView previousCard = CARD_MANAGERS.get(i-1).getCardView();
+                CardView previousCard = cardManagers.get(i-1).getCardView();
                 CardView nextCard;
-                if (i != CARD_MANAGERS.size()-1) {
-                    nextCard = CARD_MANAGERS.get(i+1).getCardView();
+                if (i != cardManagers.size()-1) {
+                    nextCard = cardManagers.get(i+1).getCardView();
                 } else {
                     nextCard = levelAdderCard;
                 }
@@ -184,7 +188,7 @@ public class EarTrainingMainPage extends Fragment {
                         previousCard.getId(), ConstraintSet.BOTTOM,
                         EarTrainingGuessFunctionLevel.CARD_COSTRAINTS_MARGIN);
                 set.applyTo(parentLayout);
-                CARD_MANAGERS.remove(i);
+                cardManagers.remove(i);
                 return;
             }
         }
@@ -208,18 +212,18 @@ public class EarTrainingMainPage extends Fragment {
 
     public void addCardCustomLevelAdder() {
         levelAdderCard = EarTrainingGuessFunctionLevel.addCustomCardAdder(getContext(),
-                getCARD_MANAGERS().get(getCARD_MANAGERS().size()-1).getCardView(),
+                getCardManagers().get(getCardManagers().size()-1).getCardView(),
                 parentLayout, getView());
         addCustomCardAlreadyAdded = true;
     }
 
     public void addCardToBottom(EarTrainingGuessFunctionLevel newManager) {
         CardView above;
-        if (CARD_MANAGERS.size() == 0) {
+        if (cardManagers.size() == 0) {
             above = null;
         } else {
-            above = CARD_MANAGERS.get(
-                    CARD_MANAGERS.size()-1).getCardView();
+            above = cardManagers.get(
+                    cardManagers.size()-1).getCardView();
         }
 
         ContentResolver resolver = getActivity().getContentResolver();
@@ -234,7 +238,7 @@ public class EarTrainingMainPage extends Fragment {
 
         newManager.getCardView().setOnClickListener(view -> cardOnClick(view, newManager));
 
-        CARD_MANAGERS.add(newManager);
+        cardManagers.add(newManager);
 
         if (addCustomCardAlreadyAdded) {
 
@@ -244,7 +248,7 @@ public class EarTrainingMainPage extends Fragment {
             constraintSet.connect(
                     levelAdderCard.getId(),
                     ConstraintSet.TOP,
-                    CARD_MANAGERS.get(CARD_MANAGERS.size()-1).getCardView().getId(),
+                    cardManagers.get(cardManagers.size()-1).getCardView().getId(),
                     ConstraintSet.BOTTOM);
             constraintSet.applyTo(constraintLayout);
         }
@@ -347,8 +351,8 @@ public class EarTrainingMainPage extends Fragment {
         return bundle;
     }
 
-    public ArrayList<EarTrainingGuessFunctionLevel> getCARD_MANAGERS() {
-        return CARD_MANAGERS;
+    public ArrayList<EarTrainingGuessFunctionLevel> getCardManagers() {
+        return cardManagers;
     }
 
     public boolean isActualAutomaticAnswersWithVoiceValue() {

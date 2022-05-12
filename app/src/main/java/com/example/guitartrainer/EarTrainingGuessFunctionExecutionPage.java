@@ -329,6 +329,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
        repeatButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
+               canAnswer=false;
                playRound(currentProgressionToPlay, currentNoteToGuess);
            }
        });
