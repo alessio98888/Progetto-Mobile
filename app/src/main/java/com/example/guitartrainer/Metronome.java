@@ -93,4 +93,18 @@ public class Metronome extends Fragment {
         editor.apply();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        MetronomeBasic basic = ( (MetronomePagerAdapter) viewPager.getAdapter()).getMetronomeBasic();
+        MetronomeProgrammable programmable = ( (MetronomePagerAdapter) viewPager.getAdapter()).getMetronomeProgrammable();
+
+        programmable.getProgrammableIncrementBpm().stopAndReset();
+
+        if(basic.isMetronomePlaying()){
+            basic.playButtonClick();
+        }
+
+    }
+
 }

@@ -32,7 +32,11 @@ public class MetronomeBasic extends Fragment{
     private SoundPlayerMetronome metronomeSoundPlayer;
     private final int MAX_BPM = 300;
     private final int MIN_BPM = 40;
+
+
     private boolean metronomePlaying = false;
+
+
     private ImageButton playButton;
     private SharedPreferences sharedPref;
     private EditNumberManager editNumberManager;
@@ -75,7 +79,7 @@ public class MetronomeBasic extends Fragment{
         this.metronomePlaying = metronomePlaying;
     }
 
-    private void playButtonClick() {
+    public void playButtonClick() {
 
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getString(R.string.basic_metronome_bpm_key),
@@ -99,5 +103,13 @@ public class MetronomeBasic extends Fragment{
 
     public EditNumberManager getEditNumberManager() {
         return editNumberManager;
+    }
+
+    public ImageButton getPlayButton() {
+        return playButton;
+    }
+
+    public boolean isMetronomePlaying() {
+        return metronomePlaying;
     }
 }
