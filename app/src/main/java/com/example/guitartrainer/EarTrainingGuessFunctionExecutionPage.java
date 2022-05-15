@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +93,8 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
     private String cardUniqueId;
 
+    private boolean levelEnded = false;
+
     private ArrayList<Button> answerButtons;
 
     private TextView giantFunctionNumberText;
@@ -114,7 +117,19 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         canAnswer = false;
+        this.getView().setFocusableInTouchMode(true);
+        this.getView().requestFocus();
 
+        this.getView().setOnKeyListener( new View.OnKeyListener() {
+            @Override
+            public boolean onKey( View v, int keyCode, KeyEvent event )
+            {
+                if(keyCode == KeyEvent.KEYCODE_BACK) {
+                    levelEnded = true;
+                }
+                return false;
+            }
+        });
         setTextViews();
         setAnswerButtons();
         setRepeatButtons();
@@ -473,6 +488,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     }
 
     public void navigateToEarTrainingMainPage(){
+        levelEnded = true;
         Navigation.findNavController(getView()).navigate(
                 R.id.action_earTrainingExerciseExecutionPage_to_earTrainingMainPage);
     }
@@ -644,7 +660,9 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     @Override
     public void onStop(){
         super.onStop();
-        ((Activity) getView().getContext()).finish();
+        if(!levelEnded){ // Stopped not because of level ended
+            ((Activity) getView().getContext()).finish();
+        }
     }
 
     public int getRound(){
