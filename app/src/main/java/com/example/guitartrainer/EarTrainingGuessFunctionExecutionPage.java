@@ -1,5 +1,6 @@
 package com.example.guitartrainer;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -638,6 +639,12 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         if(automaticAnswersWithVoice) {
             textToSpeech.shutdown();
         }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        ((Activity) getView().getContext()).finish();
     }
 
     public int getRound(){
