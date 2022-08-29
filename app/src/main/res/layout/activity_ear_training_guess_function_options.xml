@@ -5,7 +5,7 @@
     android:id="@+id/activity_ear_training_guess_function_options_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EarTrainingGuessFunctionOptionsActivity">
+    tools:context=".earTraining.EarTrainingGuessFunctionOptionsActivity">
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/answersWithVoiceSwitch"

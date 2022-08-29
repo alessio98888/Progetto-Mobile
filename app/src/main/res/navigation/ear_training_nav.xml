@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/earTrainingMainPage"
-        android:name="com.example.guitartrainer.EarTrainingMainPage"
+        android:name="com.example.guitartrainer.earTraining.EarTrainingMainPage"
         android:label="EarTrainingMainPage" >
         <action
             android:id="@+id/action_earTrainingMainPage_to_earTrainingExerciseExecutionPage"
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/earTrainingExerciseExecutionPage"
-        android:name="com.example.guitartrainer.EarTrainingGuessFunctionExecutionPage"
+        android:name="com.example.guitartrainer.earTraining.EarTrainingGuessFunctionExecutionPage"
         android:label="fragment_ear_training_exercise_execution_page"
         tools:layout="@layout/fragment_ear_training_exercise_execution_page" >
         <action

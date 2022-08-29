@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     android:background="#301D1D"
     android:backgroundTint="#301D1D"
-    tools:context=".MetronomeBasic">
+    tools:context=".metronome.MetronomeBasic">
 
 
-    <com.example.guitartrainer.CustomEditText
+    <com.example.guitartrainer.metronome.CustomEditText
         android:id="@+id/editBpm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

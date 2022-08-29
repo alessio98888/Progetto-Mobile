@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/home2"
-        android:name="com.example.guitartrainer.Home"
+        android:name="com.example.guitartrainer.AppMainFeaturesAccess"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/metronome"
-        android:name="com.example.guitartrainer.Metronome"
+        android:name="com.example.guitartrainer.metronome.Metronome"
         android:label="fragment_metronome">
         <action
             android:id="@+id/action_metronome_to_home2"

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#301D1D"
     android:backgroundTint="#301D1D"
-    tools:context=".MainActivity">
+    tools:context=".metronome.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"

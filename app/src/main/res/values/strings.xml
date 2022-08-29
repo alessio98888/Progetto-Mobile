@@ -89,4 +89,6 @@
     <string name="ear_training_giant_function_value_text" translatable="false">%1$d</string>
     <string name="level_completed">Level Completed!</string>
     <string name="_continue">continue</string>
+    <string name="pauseResumeButtonResume">Resume</string>
+    <string name="pauseResumeButtonPause">Pause</string>
 </resources>

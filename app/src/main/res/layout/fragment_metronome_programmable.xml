@@ -13,7 +13,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_chainStyle="spread"
     app:layout_constraintStart_toStartOf="parent"
-    tools:context=".MetronomeProgrammable">
+    tools:context=".metronome.MetronomeProgrammable">
 
 
     <Button
@@ -56,7 +56,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/from_bpm_textView" />
 
-    <com.example.guitartrainer.CustomEditText
+    <com.example.guitartrainer.metronome.CustomEditText
         android:id="@+id/from_bpm_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/to_bpm_textView" />
 
-    <com.example.guitartrainer.CustomEditText
+    <com.example.guitartrainer.metronome.CustomEditText
         android:id="@+id/to_bpm_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -184,7 +184,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/seconds_bpm_textView" />
 
-    <com.example.guitartrainer.CustomEditText
+    <com.example.guitartrainer.metronome.CustomEditText
         android:id="@+id/seconds_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

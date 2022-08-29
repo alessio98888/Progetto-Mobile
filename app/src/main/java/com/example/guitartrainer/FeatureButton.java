@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -19,6 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.Navigation;
+
+import com.example.guitartrainer.R;
+import com.example.guitartrainer.metronome.GeneralUtils;
 
 /**
  *
