@@ -19,19 +19,58 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
-    <ImageView
-        android:id="@+id/rootNotesButton"
-        android:layout_width="345dp"
-        android:layout_height="209dp"
-        android:background="@drawable/custom_root_notes_button_fretboard_visualization"
-        android:backgroundTint="#00DDD2D2"
-        android:contentDescription="@string/root_notes_trainer"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/root_notes"
-        tools:srcCompat="@drawable/root_notes" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rootNotesVisualizationCostraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/rootNotesNotCompetitive"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/rootNotesButton"
+                android:layout_width="406dp"
+                android:layout_height="210dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_root_notes_button_fretboard_visualization"
+                android:backgroundTint="#00130202"
+                android:contentDescription="@string/root_notes_trainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rootNotesVisualizationSettings"
+                app:srcCompat="@drawable/root_notes"
+                tools:srcCompat="@drawable/root_notes" />
+
+            <ImageButton
+                android:id="@+id/rootNotesVisualizationSettings"
+                android:layout_width="48dp"
+                android:layout_height="53dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:src="@drawable/ic_baseline_settings_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#000000"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

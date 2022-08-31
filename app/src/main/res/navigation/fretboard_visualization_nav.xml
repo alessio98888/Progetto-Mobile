@@ -22,5 +22,12 @@
         <action
             android:id="@+id/action_fretboardVisualizationRootNotesTrainer_to_fretboardVisualizationMainPage2"
             app:destination="@id/fretboardVisualizationMainPage2" />
+        <argument
+            android:name="noteNamesWithVoice"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="rootNamesCompetitiveMode"
+            app:argType="boolean" />
     </fragment>
 </navigation>

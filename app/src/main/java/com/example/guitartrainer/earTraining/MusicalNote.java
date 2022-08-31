@@ -3,8 +3,10 @@ package com.example.guitartrainer.earTraining;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 public class MusicalNote {
@@ -25,12 +27,32 @@ public class MusicalNote {
         }
     }
 
+    public static Map<MusicalNoteName, String> speakableNoteNames = new HashMap<MusicalNoteName, String>() {
+        {
+            put(MusicalNoteName.ab, "A flat");
+            put(MusicalNoteName.a, "A");
+            put(MusicalNoteName.bb, "B flat");
+            put(MusicalNoteName.b, "B");
+            put(MusicalNoteName.c, "c");
+            put(MusicalNoteName.db, "D flat");
+            put(MusicalNoteName.d, "D");
+            put(MusicalNoteName.eb, "E flat");
+            put(MusicalNoteName.e, "E");
+            put(MusicalNoteName.f, "F");
+            put(MusicalNoteName.gb, "G flat");
+            put(MusicalNoteName.g, "G");
+        }
+    };
     private MusicalNoteName noteName;
     private int octave;
 
     public MusicalNote(MusicalNoteName noteName, int octave) {
         this.noteName = noteName;
         this.octave = octave;
+    }
+
+    static public String getSpeakableNoteName(MusicalNoteName note){
+       return speakableNoteNames.get(note);
     }
 
     public MusicalNoteName getNoteName() {

@@ -94,4 +94,9 @@
     <string name="fretboardVisualizationFeatureButton">Fretboard Visualization</string>
     <string name="fretboardVisualizationRecordAudioPermissionText">This app needs to record audio through the microphone....</string>
     <string name="root_notes_trainer">Root Notes Trainer</string>
+    <string name="note_names">Note names</string>
+    <string name="fretboard_visualization_options">Fretboard Visualization Options</string>
+    <string name="disableRootNotesCompetitiveMode">Disable Competitive Mode</string>
+    <string name="enableRootNotesCompetitiveMode">Enable Competitive Mode</string>
+    <string name="seconds" translatable="false">%1$ds</string>
 </resources>

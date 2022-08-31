@@ -1,13 +1,10 @@
 package com.example.guitartrainer.fretboardVisualization;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Handler;
-
-import androidx.core.app.ActivityCompat;
+import android.util.Log;
 
 /**
  * User: Yarden
@@ -26,6 +23,7 @@ public class TunerEngine extends Thread {
     private static final int[] BUFFERSIZE_PER_SAMPLE_RATE = {8 * 1024, 4 * 1024, 16 * 1024, 32 * 1024};
 
     public double currentFrequency = 0.0;
+    public double currentVolume = 0.0;
 
     int SAMPLE_RATE = 8000;
     int READ_BUFFERSIZE = 4 * 1024;
@@ -77,10 +75,14 @@ public class TunerEngine extends Thread {
 //            l = System.currentTimeMillis();
             currentFrequency = processSampleData(bufferRead,SAMPLE_RATE);
 //            System.out.println("process time  = " + (System.currentTimeMillis() - l));
+
+
+
             if(currentFrequency > 0){
                 mHandler.post(callback);
                 try {
                     targetDataLine_.stop();
+                    //currentVolume = calculateVolume(bufferRead);
                     Thread.sleep(20);
                     targetDataLine_.startRecording();
                 } catch (InterruptedException e) {
@@ -93,6 +95,43 @@ public class TunerEngine extends Thread {
 
     }
 
+    private Double calculateVolume(byte[] bufferRead){
+        double average = 0.0;
+        double bufferSize = READ_BUFFERSIZE;
+        for (byte s : bufferRead)
+        {
+            if(s>0)
+            {
+                average += Math.abs(s);
+            }
+            else
+            {
+                bufferSize--;
+            }
+        }
+        //x=max;
+        double x = average/bufferSize;
+        Log.d("Volume tuner", "Average"+x );
+        double db=0;
+        if (x==0){
+            //ERROR
+        }
+        // calculating the pascal pressure based on the idea that the max amplitude (between 0 and 32767) is
+        // relative to the pressure
+        double pressure = x/51805.5336; //the value 51805.5336 can be derived from asuming that x=32767=0.6325 Pa and x=1 = 0.00002 Pa (the reference value)
+        Log.d("Volume tuner", "x="+pressure +" Pa");
+
+        double REFERENCE = 0.00002;
+        db = (20 * Math.log10(pressure/REFERENCE));
+        Log.d("Volume tuner", "db="+db);
+        if(db>0)
+        {
+            return x;
+        }
+        else{
+            throw new RuntimeException();
+        }
+    }
     public void close(){
         //targetDataLine_.stop();
         targetDataLine_.release();

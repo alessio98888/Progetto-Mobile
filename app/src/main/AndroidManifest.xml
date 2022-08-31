@@ -18,6 +18,10 @@
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".fretboardVisualization.FretboardVisualizationOptionsActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".earTraining.EarTrainingActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
