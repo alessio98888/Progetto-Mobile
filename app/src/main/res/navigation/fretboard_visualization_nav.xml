@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fretboard_visualization_nav"
+    app:startDestination="@id/fretboardVisualizationMainPage2">
+
+    <fragment
+        android:id="@+id/fretboardVisualizationMainPage2"
+        android:name="com.example.guitartrainer.fretboardVisualization.FretboardVisualizationMainPage"
+        android:label="fragment_fretboard_visualization_main_page"
+        tools:layout="@layout/fragment_fretboard_visualization_main_page" >
+        <action
+            android:id="@+id/action_fretboardVisualizationMainPage2_to_fretboardVisualizationRootNotesTrainer"
+            app:destination="@id/fretboardVisualizationRootNotesTrainer" />
+    </fragment>
+    <fragment
+        android:id="@+id/fretboardVisualizationRootNotesTrainer"
+        android:name="com.example.guitartrainer.fretboardVisualization.FretboardVisualizationRootNotesTrainer"
+        android:label="fragment_fretboard_visualization_root_notes_trainer"
+        tools:layout="@layout/fragment_fretboard_visualization_root_notes_trainer" >
+        <action
+            android:id="@+id/action_fretboardVisualizationRootNotesTrainer_to_fretboardVisualizationMainPage2"
+            app:destination="@id/fretboardVisualizationMainPage2" />
+    </fragment>
+</navigation>

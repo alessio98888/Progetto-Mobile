@@ -91,4 +91,7 @@
     <string name="_continue">continue</string>
     <string name="pauseResumeButtonResume">Resume</string>
     <string name="pauseResumeButtonPause">Pause</string>
+    <string name="fretboardVisualizationFeatureButton">Fretboard Visualization</string>
+    <string name="fretboardVisualizationRecordAudioPermissionText">This app needs to record audio through the microphone....</string>
+    <string name="root_notes_trainer">Root Notes Trainer</string>
 </resources>

@@ -4,12 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/custom_root_notes_button_fretboard_visualization.xml" value="0.20092592592592592" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/d.xml" value="0.3828125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/ic_baseline_hearing_24.xml" value="0.21851851851851853" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/j.xml" value="0.3828125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_ear_training.xml" value="0.2578125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_ear_training_guess_function_options.xml" value="0.5" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_fretboard_visualization_main_page.xml" value="0.2033514492753623" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_main.xml" value="0.2513586956521739" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/card.xml" value="0.2563405797101449" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/content_ear_training.xml" value="0.45544554455445546" />
@@ -19,6 +21,8 @@
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/feature_button.xml" value="0.29936594202898553" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_ear_training_exercise_execution_page.xml" value="0.33" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_ear_training_main_page.xml" value="0.2578125" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_fretboard_visualization_main_page.xml" value="0.33" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_fretboard_visualization_root_notes_trainer.xml" value="0.2682291666666667" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_home.xml" value="0.3029891304347826" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_metronome.xml" value="0.3029891304347826" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/fragment_metronome_basic.xml" value="0.2921195652173913" />

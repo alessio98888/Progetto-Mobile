@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class MusicalNote {
     public enum MusicalNoteName {
@@ -88,6 +89,15 @@ public class MusicalNote {
             notes.add(MusicalNoteName.values()[noteOrdinals.get(i)]);
         }
         return notes;
+    }
+
+    public static MusicalNote.MusicalNoteName getRandomNoteWithoutOctave(){
+
+        Random rand = new Random();
+        int noteIndex = rand.nextInt(12);
+        return getMusicalNotes().get(noteIndex);
+
+
     }
     public int getOctave() {
         return octave;
