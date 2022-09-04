@@ -2,7 +2,7 @@ package com.example.guitartrainer.fretboardVisualization;
 
 import com.example.guitartrainer.earTraining.MusicalNote;
 
-public class FrequenceOperations {
+public class FrequencyOperations {
     static final double[] FREQUENCIES = { 77.78, 82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81 ,174.61};
     static final String[] NAME        = {  "D#",  "E",   "F",   "F#"  , "G" ,  "G#",   "A",    "A#",   "B",   "C",     "C#",   "D",   "D#"   ,"E"  ,   "F" };
     static final MusicalNote.MusicalNoteName[] NOTES = {

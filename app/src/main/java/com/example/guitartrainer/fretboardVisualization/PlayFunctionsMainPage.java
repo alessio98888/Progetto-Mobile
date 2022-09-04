@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,10 +24,13 @@ import android.view.ViewManager;
 import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.GuessFunctionLevel;
 import com.example.guitartrainer.earTraining.MusicalNote;
+import com.example.guitartrainer.earTraining.MusicalProgression;
 import com.example.guitartrainer.earTraining.MusicalScale;
+import com.example.guitartrainer.earTraining.OctaveOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class PlayFunctionsMainPage extends Fragment {
@@ -169,7 +173,7 @@ public class PlayFunctionsMainPage extends Fragment {
 
         newManager.createAndAddPlayFunctionsLevelCard(getContext(), parentLayout, above);
 
-        //newManager.getCardView().setOnClickListener(view -> cardOnClick(view, newManager));
+        newManager.getCardView().setOnClickListener(view -> cardOnClick(view, newManager));
 
         cardManagers.add(newManager);
 
@@ -187,6 +191,38 @@ public class PlayFunctionsMainPage extends Fragment {
         }
     }
 
+    public void cardOnClick(View view, PlayFunctionsLevel cardManager) {
+        ArrayList<Integer> rootNotes;
+        if (cardManager.getMusicalNote() == MusicalNote.MusicalNoteName.all) {
+            rootNotes = (ArrayList<Integer>)MusicalNote.getMusicalNotesOrdinals();
+        } else {
+            rootNotes = new ArrayList<>();
+            rootNotes.add(
+                    cardManager.getMusicalNote().ordinal());
+        }
+
+
+        Bundle bundle = new Bundle();
+        bundle.putIntArray("rootNotes", convertIntegers(rootNotes));
+        bundle.putInt("scaleMode", cardManager.getMusicalScale().ordinal());
+        bundle.putIntArray("functionsToPlay", convertIntegers(cardManager.getFunctionsToPlay()));
+        bundle.putBoolean("automaticAnswersWithVoice", noteNamesWithVoice);
+        bundle.putString("cardUniqueId", cardManager.getUniqueCardId());
+        bundle.putInt("levelType", cardManager.getLevelType().ordinal());
+        bundle.putBoolean("competitiveMode", competitiveMode);
+
+        Navigation.findNavController(view).navigate(
+                R.id.action_playFunctionsMainPage_to_playFunctionExecutionPage, bundle);
+    }
+    public static int[] convertIntegers(List<Integer> integers)
+    {
+        int[] ret = new int[integers.size()];
+        for (int i=0; i < ret.length; i++)
+        {
+            ret[i] = integers.get(i).intValue();
+        }
+        return ret;
+    }
     public void deleteCard(PlayFunctionsLevel levelToDelete) {
 
         ConstraintSet set = new ConstraintSet();

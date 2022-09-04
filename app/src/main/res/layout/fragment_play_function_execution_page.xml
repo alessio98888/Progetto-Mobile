@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playFunctionsExecutionPageRootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#301D1D"
     tools:context=".fretboardVisualization.PlayFunctionExecutionPage">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/fretboardPlayFunctionCurrentRoundText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="10/20" />
+
+    <TextView
+        android:id="@+id/playFunctionsExecutionFunctionToPlayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="200sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/_7" />
+
+    <TextView
+        android:id="@+id/playFunctionsExecutionRootNoteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="125sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/playFunctionsExecutionScaleMode"
+        app:layout_constraintEnd_toStartOf="@+id/playFunctionsExecutionScaleMode"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Ab" />
+
+    <TextView
+        android:id="@+id/playFunctionsExecutionScaleMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#CDBCBC"
+        android:textSize="50sp"
+        app:layout_constraintBottom_toTopOf="@+id/playFunctionsExecutionFunctionToPlayText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/playFunctionsExecutionRootNoteText"
+        app:layout_constraintTop_toBottomOf="@+id/fretboardPlayFunctionCurrentRoundText"
+        tools:text="Major" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

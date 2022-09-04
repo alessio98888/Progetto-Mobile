@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#301D1D"
-    tools:context=".fretboardVisualization.RootNotesTrainer">
+    tools:context=".fretboardVisualization.RootNotesTrainerExecutionPage">
 
     <!-- TODO: Update blank fragment layout -->
 

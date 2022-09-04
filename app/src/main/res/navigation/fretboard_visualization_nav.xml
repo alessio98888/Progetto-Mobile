@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/fretboardVisualizationRootNotesTrainer"
-        android:name="com.example.guitartrainer.fretboardVisualization.RootNotesTrainer"
+        android:name="com.example.guitartrainer.fretboardVisualization.RootNotesTrainerExecutionPage"
         android:label="fragment_fretboard_visualization_root_notes_trainer"
         tools:layout="@layout/fragment_fretboard_visualization_root_notes_trainer" >
         <action
@@ -78,5 +78,12 @@
         <argument
             android:name="functionsToPlay"
             app:argType="integer[]" />
+        <argument
+            android:name="competitiveMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <action
+            android:id="@+id/action_playFunctionExecutionPage_to_fretboardVisualizationMainPage2"
+            app:destination="@id/fretboardVisualizationMainPage2" />
     </fragment>
 </navigation>

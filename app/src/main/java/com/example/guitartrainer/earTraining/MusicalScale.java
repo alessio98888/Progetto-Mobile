@@ -43,6 +43,30 @@ public class MusicalScale {
     }
 
     public static MusicalScaleNote getRandomScaleNote(
+            MusicalNote.MusicalNoteName rootNote, ScaleMode scaleMode, ArrayList<Integer> functionsToChooseFrom) {
+        Random rand = new Random();
+        int[] formula = scaleFormulas.get(scaleMode);
+        assert formula != null;
+
+        // scale function generation (-1: not root octave)
+        int formulaIndex = functionsToChooseFrom.get(rand.nextInt(functionsToChooseFrom.size())) - 1;
+
+        int distanceFromRoot = 0;
+
+        for (int i = 0; i<=formulaIndex; i++){
+            distanceFromRoot+=formula[i];
+        }
+
+        ArrayList<MusicalNote.MusicalNoteName> noteNames =
+                (ArrayList<MusicalNote.MusicalNoteName>) MusicalNote.getMusicalNotes();
+
+        MusicalNote note = new MusicalNote(
+                noteNames.get((rootNote.ordinal() + distanceFromRoot) % noteNames.size()), 0);
+
+        return new MusicalScaleNote(note, formulaIndex + 1);
+    }
+
+    public static MusicalScaleNote getRandomScaleNote(
             MusicalNote.MusicalNoteName rootNote, ScaleMode scaleMode){
 
         Random rand = new Random();

@@ -33,7 +33,7 @@ import com.example.guitartrainer.earTraining.MusicalNote;
 import java.util.Locale;
 
 
-public class RootNotesTrainer extends Fragment {
+public class RootNotesTrainerExecutionPage extends Fragment {
 
     boolean noteNamesWithVoice;
 
@@ -192,14 +192,14 @@ public class RootNotesTrainer extends Fragment {
 
     public void calculateIfMatchedNote(double frequency){
         if(frequency > 70){
-            frequency = FrequenceOperations.normaliseFreq(frequency);
-            int note = FrequenceOperations.closestNote(frequency);
-            double matchFreq = FrequenceOperations.FREQUENCIES[note];
+            frequency = FrequencyOperations.normaliseFreq(frequency);
+            int note = FrequencyOperations.closestNote(frequency);
+            double matchFreq = FrequencyOperations.FREQUENCIES[note];
 
-            if(FrequenceOperations.NOTES[note].equals(noteToPlay)){
+            if(FrequencyOperations.NOTES[note].equals(noteToPlay)){
                 nextRound();
             }
-            readFreqText.setText(FrequenceOperations.NOTES[note].toString());
+            readFreqText.setText(FrequencyOperations.NOTES[note].toString());
         }
 
 
