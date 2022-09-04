@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
  *
  * All MediaPlayer listeners are registered on the worker thread.
  */
-public class EarTrainingGuessFunctionExecutionPage extends Fragment {
+public class GuessFunctionExecutionPage extends Fragment {
     private boolean automaticAnswersWithVoice;
     private TextToSpeech textToSpeech;
     private UtteranceProgressListener utteranceProgressListener;
-    private EarTrainingGuessFunctionLevel.LevelType levelType;
+    private GuessFunctionLevel.LevelType levelType;
 
     private final int MIN_OCTAVE_SUPPORTED = 1;
     private final int MAX_OCTAVE_SUPPORTED = 7;
@@ -84,7 +84,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
     private Vector<Vector<MediaPlayer>> notePlayers;
     private Map<MusicalNote.MusicalNoteName, MediaPlayer> progressionPlayers;
 
-    private EarTrainingOctaveOption.EarTrainingOctaveOptionEnum earTrainingOctaveOptionEnum;
+    private OctaveOption.EarTrainingOctaveOptionEnum earTrainingOctaveOptionEnum;
 
     private boolean wrongAnswer = false;
 
@@ -146,7 +146,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
             initTextToSpeech();
         }
 
-        earTrainingOctaveOptionEnum = EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.values()[
+        earTrainingOctaveOptionEnum = OctaveOption.EarTrainingOctaveOptionEnum.values()[
                 getArguments().getInt("ear_training_option_index")];
 
         scaleMode = MusicalScale.ScaleMode.values()[
@@ -154,7 +154,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
         cardUniqueId = getArguments().getString("cardUniqueId");
 
-        levelType = EarTrainingGuessFunctionLevel.LevelType.values()[
+        levelType = GuessFunctionLevel.LevelType.values()[
                 getArguments().getInt("levelType")];
 
         if (!automaticAnswersWithVoice) {
@@ -217,7 +217,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
 
                             if ((notePlayersPrepared == numberOfNotePlayersToInit) &&
                                     (progressionPlayersPrepared == rootNotesNames.size())) {
-                                handlerMain.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                                handlerMain.post(GuessFunctionExecutionPage.this::playFirstRound);
                             }
                         }
                     });
@@ -287,7 +287,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                                     if ((notePlayersPrepared == numberOfNotePlayersToInit) &&
                                             (progressionPlayersPrepared == rootNotesNames.size())) {
 
-                                        handlerMain.post(EarTrainingGuessFunctionExecutionPage.this::playFirstRound);
+                                        handlerMain.post(GuessFunctionExecutionPage.this::playFirstRound);
                                     }
                                 }
 
@@ -463,12 +463,12 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
         ContentResolver resolver = getActivity().getContentResolver();
 
         ContentProviderClient client = resolver.acquireContentProviderClient(
-                EarTrainingCardStatsProvider.CONTENT_URI);
+                CardStatsProvider.CONTENT_URI);
 
-        EarTrainingCardStatsProvider provider =
-                (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+        CardStatsProvider provider =
+                (CardStatsProvider) client.getLocalContentProvider();
 
-        provider.insertOrUpdateCard(new EarTrainingCardStats(
+        provider.insertOrUpdateCard(new CardStats(
                 cardUniqueId,
                 successPerc,
                 levelType
@@ -612,7 +612,7 @@ public class EarTrainingGuessFunctionExecutionPage extends Fragment {
                 currentProgressionToPlay.getRootNote(), scaleMode);
 
         int octave = DEFAULT_OCTAVE;
-        if (earTrainingOctaveOptionEnum == EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves) {
+        if (earTrainingOctaveOptionEnum == OctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves) {
             octave = (int) Math.floor(Math.random()*
                     (MAX_OCTAVE_SUPPORTED - MIN_OCTAVE_SUPPORTED +1)+ MIN_OCTAVE_SUPPORTED);
         }

@@ -5,7 +5,7 @@
     android:id="@+id/activity_fretboard_visualization_options"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".earTraining.EarTrainingGuessFunctionOptionsActivity">
+    tools:context=".earTraining.GuessFunctionOptionsActivity">
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/fretboard_visualization_answersWithVoiceSwitch"

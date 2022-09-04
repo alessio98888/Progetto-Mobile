@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.guitartrainer.ProviderReturn.InsertOrUpdateReturn;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -431,16 +432,16 @@ public class MetronomeProgrammable extends Fragment implements Observer,
                 newPresetValues.put(ProgrammableMetronomePresetsProvider.MODE,
                         newPreset.getMode().ordinal());
 
-                ProgrammableMetronomePresetsProvider.InsertOrUpdateReturn ret;
+                InsertOrUpdateReturn ret;
                 ret = presetsProvider.insertOrUpdate(ProgrammableMetronomePresetsProvider.CONTENT_URI,
                                                      newPresetValues);
 
-                if (ret == ProgrammableMetronomePresetsProvider.InsertOrUpdateReturn.Inserted) {
+                if (ret == InsertOrUpdateReturn.Inserted) {
                     updateCurrentPreset(newPreset.getPresetName());
 
                     Toast.makeText(getContext(), R.string.toast_new_preset_saved, Toast.LENGTH_SHORT).show();
 
-                } else if (ret == ProgrammableMetronomePresetsProvider.InsertOrUpdateReturn.Updated) {
+                } else if (ret == InsertOrUpdateReturn.Updated) {
                     updateCurrentPreset(newPreset.getPresetName());
 
                     Toast.makeText(getContext(), R.string.toast_update_preset, Toast.LENGTH_SHORT).show();

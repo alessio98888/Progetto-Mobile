@@ -31,14 +31,13 @@ import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.MusicalNote;
 
 import java.util.Locale;
-import java.util.Objects;
 
 
-public class FretboardVisualizationRootNotesTrainer extends Fragment {
+public class RootNotesTrainer extends Fragment {
 
     boolean noteNamesWithVoice;
 
-    boolean rootNamesCompetitiveMode;
+    boolean competitiveMode;
     int currentRound = 0;
     static final int MAX_ROUND = 3;
     TextView currentRoundText;
@@ -91,7 +90,7 @@ public class FretboardVisualizationRootNotesTrainer extends Fragment {
                 "noteNamesWithVoice",
                 false);
 
-        rootNamesCompetitiveMode = getArguments().getBoolean(
+        competitiveMode = getArguments().getBoolean(
                 "rootNamesCompetitiveMode",
                 false);
         currentRoundText = requireActivity().findViewById(R.id.fretboardRootVisualizationCurrentRoundText);
@@ -209,7 +208,7 @@ public class FretboardVisualizationRootNotesTrainer extends Fragment {
 
     public void nextRound(){
 
-        if(rootNamesCompetitiveMode){
+        if(competitiveMode){
             if(currentRound == MAX_ROUND){
                 Long resultTime = System.currentTimeMillis()/1000 - startTimestamp;
                 showCompetitiveResults(resultTime);

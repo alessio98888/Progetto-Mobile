@@ -1,24 +1,24 @@
-package com.example.guitartrainer.earTraining;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
+package com.example.guitartrainer.fretboardVisualization;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.example.guitartrainer.R;
 
-public class EarTrainingGuessFunctionOptionsActivity extends AppCompatActivity {
-    SwitchCompat automaticAnswersWithVoice;
+public class OptionsActivity extends AppCompatActivity {
+    SwitchCompat noteNamesWithVoice;
     Button saveAndExit;
     Button cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ear_training_guess_function_options);
+        setContentView(R.layout.activity_fretboard_visualization_options);
 
         findViews();
         setStartingValueForTheAutomaticAnswersVoiceToFalse();
@@ -26,14 +26,14 @@ public class EarTrainingGuessFunctionOptionsActivity extends AppCompatActivity {
     }
 
     private void findViews() {
-        automaticAnswersWithVoice = findViewById(R.id.answersWithVoiceSwitch);
-        saveAndExit = findViewById(R.id.save_and_exit);
-        cancel = findViewById(R.id.cancel);
+        noteNamesWithVoice = findViewById(R.id.fretboard_visualization_answersWithVoiceSwitch);
+        saveAndExit = findViewById(R.id.fretboard_visualization_options_save_and_exit);
+        cancel = findViewById(R.id.fretboard_visualization_options_cancel);
     }
 
     private void setStartingValueForTheAutomaticAnswersVoiceToFalse() {
-        automaticAnswersWithVoice.setChecked(getIntent().getBooleanExtra(
-                "automaticAnswersWithVoice",
+        noteNamesWithVoice.setChecked(getIntent().getBooleanExtra(
+                "noteNamesWithVoice",
                 false));
     }
 
@@ -47,7 +47,7 @@ public class EarTrainingGuessFunctionOptionsActivity extends AppCompatActivity {
         });
         saveAndExit.setOnClickListener(view -> {
             Intent data = new Intent();
-            data.putExtra("automaticAnswersWithVoice", automaticAnswersWithVoice.isChecked());
+            data.putExtra("noteNamesWithVoice", noteNamesWithVoice.isChecked());
             setResult(RESULT_OK, data);
             finish();
         });

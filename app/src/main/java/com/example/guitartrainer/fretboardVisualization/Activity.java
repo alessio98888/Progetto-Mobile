@@ -6,7 +6,7 @@ import com.example.guitartrainer.R;
 
 import android.os.Bundle;
 
-public class FretboardVisualizationActivity extends AppCompatActivity {
+public class Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

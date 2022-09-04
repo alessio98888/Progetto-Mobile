@@ -18,6 +18,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.example.guitartrainer.ProviderReturn.InsertOrUpdateReturn;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -115,11 +116,6 @@ public class ProgrammableMetronomePresetsProvider extends ContentProvider {
        }
     }
 
-    public enum InsertOrUpdateReturn{
-       Inserted,
-       Updated,
-       Error
-    }
 
     public InsertOrUpdateReturn insertOrUpdate(Uri uri, ContentValues values){
         Uri uriOut = insert(uri, values);

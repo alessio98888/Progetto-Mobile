@@ -45,15 +45,15 @@ import java.util.ArrayList;
 1.00 05/01/2022
  * @author
 Alessio Ardu  */
-public class EarTrainingMainPage extends Fragment {
+public class MainPage extends Fragment {
 
-    private ArrayList<EarTrainingGuessFunctionLevel> cardManagers;
+    private ArrayList<GuessFunctionLevel> cardManagers;
 
     private ConstraintLayout parentLayout;
 
     private boolean addCustomCardAlreadyAdded = false;
 
-    private static EarTrainingMainPage instance = null;
+    private static MainPage instance = null;
 
     private CardView levelAdderCard = null;
 
@@ -99,7 +99,7 @@ public class EarTrainingMainPage extends Fragment {
         return inflater.inflate(R.layout.content_ear_training, container, false);
     }
 
-    public static EarTrainingMainPage getInstance() {
+    public static MainPage getInstance() {
         return instance;
     }
 
@@ -142,7 +142,7 @@ public class EarTrainingMainPage extends Fragment {
     }
 
     public void openOptionsActivityForResult() {
-        Intent intent = new Intent(getContext(), EarTrainingGuessFunctionOptionsActivity.class);
+        Intent intent = new Intent(getContext(), GuessFunctionOptionsActivity.class);
         intent.putExtra("automaticAnswersWithVoice", actualAutomaticAnswersWithVoiceValue);
         optionsActivityResultLauncher.launch(intent);
     }
@@ -165,10 +165,10 @@ public class EarTrainingMainPage extends Fragment {
         });
     }
 
-    public void deleteCard(EarTrainingGuessFunctionLevel levelToDelete) {
+    public void deleteCard(GuessFunctionLevel levelToDelete) {
 
         ConstraintSet set = new ConstraintSet();
-        EarTrainingGuessFunctionLevel managerToDelete;
+        GuessFunctionLevel managerToDelete;
         for (int i = 0; i< cardManagers.size(); i++) {
             managerToDelete = cardManagers.get(i);
             if (managerToDelete.getUniqueCardId().equals(levelToDelete.getUniqueCardId())) {
@@ -186,7 +186,7 @@ public class EarTrainingMainPage extends Fragment {
                 set.connect(
                         nextCard.getId(), ConstraintSet.TOP,
                         previousCard.getId(), ConstraintSet.BOTTOM,
-                        EarTrainingGuessFunctionLevel.CARD_COSTRAINTS_MARGIN);
+                        GuessFunctionLevel.CARD_COSTRAINTS_MARGIN);
                 set.applyTo(parentLayout);
                 cardManagers.remove(i);
                 return;
@@ -197,27 +197,27 @@ public class EarTrainingMainPage extends Fragment {
     public void getCustomLevelsFromProvider() {
         ContentResolver resolver = getActivity().getContentResolver();
         ContentProviderClient client = resolver.acquireContentProviderClient(
-                EarTrainingCardStatsProvider.CONTENT_URI);
-        EarTrainingCardStatsProvider provider =
-                (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+                CardStatsProvider.CONTENT_URI);
+        CardStatsProvider provider =
+                (CardStatsProvider) client.getLocalContentProvider();
 
-        ArrayList<EarTrainingCardStats> cardStats = provider.getCardStats();
+        ArrayList<CardStats> cardStats = provider.getCardStats();
 
         for (int i=0; i<cardStats.size(); i++) {
-            if(cardStats.get(i).getLevelType() == EarTrainingGuessFunctionLevel.LevelType.Custom) {
-                addCardToBottom(new EarTrainingGuessFunctionLevel(getActivity(), cardStats.get(i)));
+            if(cardStats.get(i).getLevelType() == GuessFunctionLevel.LevelType.Custom) {
+                addCardToBottom(new GuessFunctionLevel(getActivity(), cardStats.get(i)));
             }
         }
     }
 
     public void addCardCustomLevelAdder() {
-        levelAdderCard = EarTrainingGuessFunctionLevel.addCustomCardAdder(getContext(),
+        levelAdderCard = GuessFunctionLevel.addCustomCardAdder(getContext(),
                 getCardManagers().get(getCardManagers().size()-1).getCardView(),
                 parentLayout, getView());
         addCustomCardAlreadyAdded = true;
     }
 
-    public void addCardToBottom(EarTrainingGuessFunctionLevel newManager) {
+    public void addCardToBottom(GuessFunctionLevel newManager) {
         CardView above;
         if (cardManagers.size() == 0) {
             above = null;
@@ -228,9 +228,9 @@ public class EarTrainingMainPage extends Fragment {
 
         ContentResolver resolver = getActivity().getContentResolver();
         ContentProviderClient client = resolver.acquireContentProviderClient(
-                EarTrainingCardStatsProvider.CONTENT_URI);
-        EarTrainingCardStatsProvider provider =
-                (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+                CardStatsProvider.CONTENT_URI);
+        CardStatsProvider provider =
+                (CardStatsProvider) client.getLocalContentProvider();
 
         newManager.addEarTrainingCardWithObjectsAndDefaults(getContext(), parentLayout,
                 getScoreTextUsingProvider(provider, newManager.getUniqueCardId()),
@@ -258,36 +258,36 @@ public class EarTrainingMainPage extends Fragment {
         ContentResolver resolver = getActivity().getContentResolver();
 
         ContentProviderClient client = resolver.acquireContentProviderClient(
-                EarTrainingCardStatsProvider.CONTENT_URI);
+                CardStatsProvider.CONTENT_URI);
 
         //Maybe not necessary
-        EarTrainingCardStatsProvider provider =
-                (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+        CardStatsProvider provider =
+                (CardStatsProvider) client.getLocalContentProvider();
 
         MusicalNote rootNoteCard = new MusicalNote(MusicalNote.MusicalNoteName.c, 0);
         MusicalScale scaleCard = new MusicalScale(rootNoteCard, MusicalScale.ScaleMode.Major);
         MusicalProgression progressionCard = new MusicalProgression(rootNoteCard.getNoteName(),
                 MusicalProgression.MusicalProgressionId._1_4_1_5, true, scaleCard.getScaleMode());
-        EarTrainingOctaveOption octaveOption = new EarTrainingOctaveOption(
-                EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.One_Octave);
+        OctaveOption octaveOption = new OctaveOption(
+                OctaveOption.EarTrainingOctaveOptionEnum.One_Octave);
 
         // DEFAULT 1
-        EarTrainingGuessFunctionLevel default1 = new EarTrainingGuessFunctionLevel(getActivity(),
+        GuessFunctionLevel default1 = new GuessFunctionLevel(getActivity(),
                 scaleCard, octaveOption, progressionCard,
-                EarTrainingGuessFunctionLevel.LevelType.Default, -1);
+                GuessFunctionLevel.LevelType.Default, -1);
 
         provider.insertOrUpdateCard(default1.getCardStats());
         default1.setSuccessPerc(provider.getSuccessPerc(default1.getUniqueCardId()), false);
         addCardToBottom(default1);
 
 
-        octaveOption = new EarTrainingOctaveOption(
-                EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves);
+        octaveOption = new OctaveOption(
+                OctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves);
 
         // DEFAULT 2
-        EarTrainingGuessFunctionLevel default2 = new EarTrainingGuessFunctionLevel(getActivity(),
+        GuessFunctionLevel default2 = new GuessFunctionLevel(getActivity(),
                 scaleCard, octaveOption, progressionCard,
-                EarTrainingGuessFunctionLevel.LevelType.Default, -1);
+                GuessFunctionLevel.LevelType.Default, -1);
 
         provider.insertOrUpdateCard(default2.getCardStats());
         default2.setSuccessPerc(provider.getSuccessPerc(default2.getUniqueCardId()), false);
@@ -295,7 +295,7 @@ public class EarTrainingMainPage extends Fragment {
 
     }
 
-    public String getScoreTextUsingProvider(EarTrainingCardStatsProvider provider, String cardUniqueId) {
+    public String getScoreTextUsingProvider(CardStatsProvider provider, String cardUniqueId) {
         int succesPerc = provider.getSuccessPerc(cardUniqueId);
         String scoreText;
         if (succesPerc==-1) {
@@ -307,7 +307,7 @@ public class EarTrainingMainPage extends Fragment {
         return scoreText;
     }
 
-    public void cardOnClick(View view, EarTrainingGuessFunctionLevel cardManager) {
+    public void cardOnClick(View view, GuessFunctionLevel cardManager) {
         ArrayList<Integer> rootNotes;
         if (cardManager.getCardMusicalScale().getRootNote().getNoteName() == MusicalNote.MusicalNoteName.all) {
             rootNotes = (ArrayList<Integer>)MusicalNote.getMusicalNotesOrdinals();
@@ -333,7 +333,7 @@ public class EarTrainingMainPage extends Fragment {
     }
 
     public Bundle getEarTrainingBundle(ArrayList<Integer> rootNotes,
-                                       EarTrainingOctaveOption.EarTrainingOctaveOptionEnum earTrainingOption,
+                                       OctaveOption.EarTrainingOctaveOptionEnum earTrainingOption,
                                        MusicalProgression.MusicalProgressionId progressionId,
                                        MusicalScale.ScaleMode scaleMode) {
         Bundle bundle = new Bundle();
@@ -350,7 +350,7 @@ public class EarTrainingMainPage extends Fragment {
         return bundle;
     }
 
-    public ArrayList<EarTrainingGuessFunctionLevel> getCardManagers() {
+    public ArrayList<GuessFunctionLevel> getCardManagers() {
         return cardManagers;
     }
 

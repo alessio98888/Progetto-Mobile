@@ -11,18 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GuitarTrainer">
         <activity
-            android:name=".fretboardVisualization.FretboardVisualizationActivity"
+            android:name=".fretboardVisualization.Activity"
             android:exported="true" />
         <activity
-            android:name=".earTraining.EarTrainingGuessFunctionOptionsActivity"
+            android:name=".earTraining.GuessFunctionOptionsActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".fretboardVisualization.FretboardVisualizationOptionsActivity"
+            android:name=".fretboardVisualization.OptionsActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".earTraining.EarTrainingActivity"
+            android:name=".earTraining.Activity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
@@ -30,8 +30,11 @@
             android:name=".metronome.ProgrammableMetronomePresetsProvider"
             android:authorities="com.example.guitartrainer.metronome.ProgrammableMetronomePresetsProvider" />
         <provider
-            android:name=".earTraining.EarTrainingCardStatsProvider"
-            android:authorities="com.example.guitartrainer.earTraining.EarTrainingCardStatsProvider" />
+            android:name=".earTraining.CardStatsProvider"
+            android:authorities="com.example.guitartrainer.earTraining.CardStatsProvider" />
+        <provider
+            android:name=".fretboardVisualization.PlayFunctionsCardStatsProvider"
+            android:authorities="com.example.guitartrainer.fretboardVisualization.PlayFunctionsCardStatsProvider" />
 
         <activity
             android:name=".metronome.MainActivity"

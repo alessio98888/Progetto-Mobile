@@ -7,16 +7,19 @@
 
     <fragment
         android:id="@+id/fretboardVisualizationMainPage2"
-        android:name="com.example.guitartrainer.fretboardVisualization.FretboardVisualizationMainPage"
+        android:name="com.example.guitartrainer.fretboardVisualization.MainPage"
         android:label="fragment_fretboard_visualization_main_page"
         tools:layout="@layout/fragment_fretboard_visualization_main_page" >
         <action
             android:id="@+id/action_fretboardVisualizationMainPage2_to_fretboardVisualizationRootNotesTrainer"
             app:destination="@id/fretboardVisualizationRootNotesTrainer" />
+        <action
+            android:id="@+id/action_fretboardVisualizationMainPage2_to_playFunctionsMainPage"
+            app:destination="@id/playFunctionsMainPage" />
     </fragment>
     <fragment
         android:id="@+id/fretboardVisualizationRootNotesTrainer"
-        android:name="com.example.guitartrainer.fretboardVisualization.FretboardVisualizationRootNotesTrainer"
+        android:name="com.example.guitartrainer.fretboardVisualization.RootNotesTrainer"
         android:label="fragment_fretboard_visualization_root_notes_trainer"
         tools:layout="@layout/fragment_fretboard_visualization_root_notes_trainer" >
         <action
@@ -29,5 +32,51 @@
         <argument
             android:name="rootNamesCompetitiveMode"
             app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/playFunctionsMainPage"
+        android:name="com.example.guitartrainer.fretboardVisualization.PlayFunctionsMainPage"
+        android:label="fragment_play_functions_main_page"
+        tools:layout="@layout/fragment_play_functions_main_page" >
+        <action
+            android:id="@+id/action_playFunctionsMainPage_to_fretboardVisualizationMainPage2"
+            app:destination="@id/fretboardVisualizationMainPage2" />
+        <argument
+            android:name="playFunctionsCompetitiveMode"
+            app:argType="boolean" />
+        <argument
+            android:name="noteNamesWithVoice"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_playFunctionsMainPage_to_playFunctionExecutionPage"
+            app:destination="@id/playFunctionExecutionPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/playFunctionExecutionPage"
+        android:name="com.example.guitartrainer.fretboardVisualization.PlayFunctionExecutionPage"
+        android:label="fragment_play_function_execution_page"
+        tools:layout="@layout/fragment_play_function_execution_page" >
+        <action
+            android:id="@+id/action_playFunctionExecutionPage_to_playFunctionsMainPage"
+            app:destination="@id/playFunctionsMainPage" />
+        <argument
+            android:name="rootNotes"
+            app:argType="integer[]" />
+        <argument
+            android:name="scaleMode"
+            app:argType="integer" />
+        <argument
+            android:name="cardUniqueId"
+            app:argType="string" />
+        <argument
+            android:name="levelType"
+            app:argType="integer" />
+        <argument
+            android:name="automaticAnswersWithVoice"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="functionsToPlay"
+            app:argType="integer[]" />
     </fragment>
 </navigation>

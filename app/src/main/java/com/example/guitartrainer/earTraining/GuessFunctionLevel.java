@@ -26,6 +26,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import com.example.guitartrainer.ProviderReturn;
 import com.example.guitartrainer.metronome.GeneralUtils;
 import com.example.guitartrainer.R;
 
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EarTrainingGuessFunctionLevel {
+public class GuessFunctionLevel {
 
     public enum LevelType {
         Default,
@@ -73,7 +74,7 @@ public class EarTrainingGuessFunctionLevel {
 
     private MusicalScale cardMusicalScale;
     private MusicalProgression cardMusicalProgression;
-    private EarTrainingOctaveOption octaveOption;
+    private OctaveOption octaveOption;
 
     private LevelType levelType;
 
@@ -87,12 +88,12 @@ public class EarTrainingGuessFunctionLevel {
 
     private Activity activity;
 
-    public EarTrainingGuessFunctionLevel() {
+    public GuessFunctionLevel() {
 
     }
 
     private void constructorCore(Activity activity, MusicalScale cardMusicalScale,
-                                 EarTrainingOctaveOption octaveOption,
+                                 OctaveOption octaveOption,
                                  MusicalProgression cardMusicalProgression,
                                  LevelType levelType,
                                  int successPerc) {
@@ -103,30 +104,30 @@ public class EarTrainingGuessFunctionLevel {
         this.successPerc = successPerc;
         this.activity = activity;
 
-        EarTrainingCardStatsProvider provider = getEarTrainingCardStatsProvider();
+        CardStatsProvider provider = getEarTrainingCardStatsProvider();
 
-        EarTrainingCardStatsProvider.InsertOrUpdateReturn returnValue;
+        ProviderReturn.InsertOrUpdateReturn returnValue;
 
-        returnValue = provider.insertOrUpdateCard(new EarTrainingCardStats(
+        returnValue = provider.insertOrUpdateCard(new CardStats(
                 this.getUniqueCardId(),
                 successPerc,
                 this.levelType
         ));
 
-        this.updated = returnValue == EarTrainingCardStatsProvider.InsertOrUpdateReturn.Updated;
+        this.updated = returnValue == ProviderReturn.InsertOrUpdateReturn.Updated;
     }
 
-    public EarTrainingGuessFunctionLevel(Activity activity, MusicalScale cardMusicalScale,
-                                         EarTrainingOctaveOption octaveOption,
-                                         MusicalProgression cardMusicalProgression,
-                                         LevelType levelType,
-                                         int successPerc
+    public GuessFunctionLevel(Activity activity, MusicalScale cardMusicalScale,
+                              OctaveOption octaveOption,
+                              MusicalProgression cardMusicalProgression,
+                              LevelType levelType,
+                              int successPerc
     ) {
         constructorCore(activity, cardMusicalScale, octaveOption, cardMusicalProgression, levelType,
                 successPerc);
     }
 
-    public EarTrainingGuessFunctionLevel(Activity activity, EarTrainingCardStats cardStats) {
+    public GuessFunctionLevel(Activity activity, CardStats cardStats) {
         String cardId = cardStats.getCardUniqueId();
         MusicalScale musicalScale = getMusicalScaleFromCardId(cardId);
         this.cardMusicalScale = musicalScale;
@@ -140,8 +141,8 @@ public class EarTrainingGuessFunctionLevel {
         );
     }
 
-    public EarTrainingCardStats getCardStats() {
-        return new EarTrainingCardStats(getUniqueCardId(), getSuccessPerc(), getLevelType());
+    public CardStats getCardStats() {
+        return new CardStats(getUniqueCardId(), getSuccessPerc(), getLevelType());
     }
 
     public void calculateSplittedCardIdIfNecessary(String cardId) {
@@ -174,11 +175,11 @@ public class EarTrainingGuessFunctionLevel {
        return new MusicalScale(getMusicalNoteFromCardId(cardId), scaleMode);
     }
 
-    public EarTrainingOctaveOption getEarTrainingOctaveOptionFromCardId(String cardId) {
+    public OctaveOption getEarTrainingOctaveOptionFromCardId(String cardId) {
         calculateSplittedCardIdIfNecessary(cardId);
 
-        return new EarTrainingOctaveOption(
-                EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.values()[
+        return new OctaveOption(
+                OctaveOption.EarTrainingOctaveOptionEnum.values()[
                         splittedCardId.get(OCTAVE_OPTION_INDEX)]);
     }
 
@@ -229,7 +230,7 @@ public class EarTrainingGuessFunctionLevel {
                                        String bestScoreTextColor,
                                        String cardBackgroundColor,
                                        int height, int width,
-                                       CardView cardBelow
+                                       CardView cardAbove
     ) {
 
 
@@ -286,11 +287,11 @@ public class EarTrainingGuessFunctionLevel {
                 CARD_COSTRAINTS_MARGIN);
         set.connect(cardview.getId(), ConstraintSet.START, parentLayout.getId(), ConstraintSet.START,
                 CARD_COSTRAINTS_MARGIN);
-        if (cardBelow==null) {
+        if (cardAbove==null) {
             set.connect(cardview.getId(), ConstraintSet.TOP, parentLayout.getId(), ConstraintSet.TOP,
                     CARD_COSTRAINTS_MARGIN);
         } else {
-            set.connect(cardview.getId(), ConstraintSet.TOP, cardBelow.getId(), ConstraintSet.BOTTOM,
+            set.connect(cardview.getId(), ConstraintSet.TOP, cardAbove.getId(), ConstraintSet.BOTTOM,
                     CARD_COSTRAINTS_MARGIN);
         }
         set.applyTo(parentLayout);
@@ -298,21 +299,54 @@ public class EarTrainingGuessFunctionLevel {
         cardview.addView(internalConstraintLayout);
     }
 
+    private void addOptionMenuToLayout(ConstraintLayout internalConstraintLayout, DisplayMetrics dm,
+                                       Context context) {
+        ImageButton optionButton = new ImageButton(context);
+        optionButton.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams optionButtonLayoutParams = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        optionButton.setLayoutParams(optionButtonLayoutParams);
+
+        optionButton.setImageResource(R.drawable.ic_baseline_menu_24);
+        optionButton.setBackground(null);
+
+        ConstraintSet optionButtonSet = new ConstraintSet();
+        internalConstraintLayout.addView(optionButton);
+        optionButtonSet.clone(internalConstraintLayout);
+        optionButtonSet.connect(optionButton.getId(), ConstraintSet.BOTTOM,
+                mainTitleText.getId(), ConstraintSet.BOTTOM);
+        optionButtonSet.connect(optionButton.getId(), ConstraintSet.TOP,
+                mainTitleText.getId(), ConstraintSet.TOP);
+        optionButtonSet.connect(optionButton.getId(), ConstraintSet.END,
+                internalConstraintLayout.getId(), ConstraintSet.END, 0);
+        optionButtonSet.applyTo(internalConstraintLayout);
+
+        optionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopup(view);
+            }
+        });
+    }
+
     private void showPopup(View v) {
         PopupMenu popup = new PopupMenu(activity, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.ear_training_guess_function_card_menu, popup.getMenu());
 
-        EarTrainingGuessFunctionLevel thisLevel = this;
+        GuessFunctionLevel thisLevel = this;
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.delete_guess_function_level) {
-                    EarTrainingCardStatsProvider provider = thisLevel.getEarTrainingCardStatsProvider();
-                    provider.deleteCardStatsByName(EarTrainingCardStatsProvider.CONTENT_URI,
+                    CardStatsProvider provider = thisLevel.getEarTrainingCardStatsProvider();
+                    provider.deleteCardStatsByName(CardStatsProvider.CONTENT_URI,
                             thisLevel.getUniqueCardId());
-                    EarTrainingMainPage.getInstance().deleteCard(thisLevel);
+                    MainPage.getInstance().deleteCard(thisLevel);
 
                     Toast.makeText(activity, "Level Deleted! ",
                             Toast.LENGTH_SHORT).show();
@@ -420,8 +454,8 @@ public class EarTrainingGuessFunctionLevel {
                         new MusicalScale.ScaleMode[1];
                 final MusicalProgression.MusicalProgressionId[] PROGRESSION_SELECTED =
                         new MusicalProgression.MusicalProgressionId[1];
-                final EarTrainingOctaveOption.EarTrainingOctaveOptionEnum[] OCTAVE_OPTION_SELECTED =
-                        new EarTrainingOctaveOption.EarTrainingOctaveOptionEnum[1];
+                final OctaveOption.EarTrainingOctaveOptionEnum[] OCTAVE_OPTION_SELECTED =
+                        new OctaveOption.EarTrainingOctaveOptionEnum[1];
 
                 ArrayAdapter<MusicalNote.MusicalNoteName> rootNamesAdapter;
                 rootNamesAdapter = new ArrayAdapter<>((Activity) view.getContext(),
@@ -447,10 +481,10 @@ public class EarTrainingGuessFunctionLevel {
                 progressionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 progressionSpinner.setAdapter( progressionsAdapter);
 
-                ArrayAdapter<EarTrainingOctaveOption.EarTrainingOctaveOptionEnum> octaveOptionsAdapter;
+                ArrayAdapter<OctaveOption.EarTrainingOctaveOptionEnum> octaveOptionsAdapter;
                 octaveOptionsAdapter = new ArrayAdapter<>(view.getContext(),
                         android.R.layout.simple_spinner_item,
-                        EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.values());
+                        OctaveOption.EarTrainingOctaveOptionEnum.values());
 
                 octaveOptionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 octavesSpinner.setAdapter( octaveOptionsAdapter);
@@ -502,7 +536,7 @@ public class EarTrainingGuessFunctionLevel {
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position,
                                                long l) {
                         OCTAVE_OPTION_SELECTED[0] =
-                                EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.values()[position];
+                                OctaveOption.EarTrainingOctaveOptionEnum.values()[position];
 
                     }
 
@@ -520,7 +554,7 @@ public class EarTrainingGuessFunctionLevel {
                 SCALE_MODE_SELECTED[0] = MusicalScale.ScaleMode.values()[0];
                 PROGRESSION_SELECTED[0] = MusicalProgression.MusicalProgressionId.values()[0];
                 OCTAVE_OPTION_SELECTED[0] =
-                        EarTrainingOctaveOption.EarTrainingOctaveOptionEnum.values()[0];
+                        OctaveOption.EarTrainingOctaveOptionEnum.values()[0];
 
                 dialogBuilder.setView(NEW_CUSTOM_CARD_VIEW);
                 AlertDialog dialog = dialogBuilder.create();
@@ -531,13 +565,13 @@ public class EarTrainingGuessFunctionLevel {
                     public void onClick(View view) {
 
 
-                        EarTrainingGuessFunctionLevel newCustomManager = new EarTrainingGuessFunctionLevel(
+                        GuessFunctionLevel newCustomManager = new GuessFunctionLevel(
                                 (Activity) context,
 
                                 new MusicalScale(new MusicalNote(ROOT_NAME_SELECTED[0],0),
                                        SCALE_MODE_SELECTED[0]),
 
-                                new EarTrainingOctaveOption(OCTAVE_OPTION_SELECTED[0]),
+                                new OctaveOption(OCTAVE_OPTION_SELECTED[0]),
 
                                 new MusicalProgression(ROOT_NAME_SELECTED[0], PROGRESSION_SELECTED[0],
                                         true, SCALE_MODE_SELECTED[0]),
@@ -548,15 +582,15 @@ public class EarTrainingGuessFunctionLevel {
                         ContentResolver resolver = ((Activity)view.getContext()).getContentResolver();
 
                         ContentProviderClient client = resolver.acquireContentProviderClient(
-                                EarTrainingCardStatsProvider.CONTENT_URI);
+                                CardStatsProvider.CONTENT_URI);
 
-                        EarTrainingCardStatsProvider provider =
-                                (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+                        CardStatsProvider provider =
+                                (CardStatsProvider) client.getLocalContentProvider();
 
                         provider.insertOrUpdateCard(newCustomManager.getCardStats());
 
                         if (!newCustomManager.isUpdated()) {
-                            EarTrainingMainPage.getInstance().addCardToBottom(newCustomManager);
+                            MainPage.getInstance().addCardToBottom(newCustomManager);
                             Toast.makeText(context, R.string.custom_level_added,
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -589,7 +623,7 @@ public class EarTrainingGuessFunctionLevel {
         return cardMusicalProgression;
     }
 
-    public EarTrainingOctaveOption getOctaveOption() {
+    public OctaveOption getOctaveOption() {
         return octaveOption;
     }
 
@@ -616,21 +650,21 @@ public class EarTrainingGuessFunctionLevel {
     public void setSuccessPerc(int successPerc, boolean updateProvider) {
         this.successPerc = successPerc;
         if (updateProvider) {
-          EarTrainingCardStatsProvider provider = getEarTrainingCardStatsProvider();
+          CardStatsProvider provider = getEarTrainingCardStatsProvider();
           ContentValues values = new ContentValues();
-          values.put(EarTrainingCardStatsProvider.SUCCESS_PERC_NAME, successPerc);
-          values.put(EarTrainingCardStatsProvider.CARD_ID_NAME, getUniqueCardId());
-          provider.insertOrUpdate(EarTrainingCardStatsProvider.CONTENT_URI, values);
+          values.put(CardStatsProvider.SUCCESS_PERC_NAME, successPerc);
+          values.put(CardStatsProvider.CARD_ID_NAME, getUniqueCardId());
+          provider.insertOrUpdate(CardStatsProvider.CONTENT_URI, values);
         }
     }
 
-    public EarTrainingCardStatsProvider getEarTrainingCardStatsProvider() {
+    public CardStatsProvider getEarTrainingCardStatsProvider() {
         ContentResolver resolver = activity.getContentResolver();
 
         ContentProviderClient client = resolver.acquireContentProviderClient(
-                EarTrainingCardStatsProvider.CONTENT_URI);
+                CardStatsProvider.CONTENT_URI);
 
-       return (EarTrainingCardStatsProvider) client.getLocalContentProvider();
+       return (CardStatsProvider) client.getLocalContentProvider();
     }
 
     private void addMainTitleToLayout(ConstraintLayout internalConstraintLayout, DisplayMetrics dm,
@@ -754,36 +788,5 @@ public class EarTrainingGuessFunctionLevel {
         bestScoreTextSet.applyTo(internalConstraintLayout);
     }
 
-    private void addOptionMenuToLayout(ConstraintLayout internalConstraintLayout, DisplayMetrics dm,
-                                       Context context) {
-        ImageButton optionButton = new ImageButton(context);
-        optionButton.setId(View.generateViewId());
-        ConstraintLayout.LayoutParams optionButtonLayoutParams = new ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-        );
 
-        optionButton.setLayoutParams(optionButtonLayoutParams);
-
-        optionButton.setImageResource(R.drawable.ic_baseline_menu_24);
-        optionButton.setBackground(null);
-
-        ConstraintSet optionButtonSet = new ConstraintSet();
-        internalConstraintLayout.addView(optionButton);
-        optionButtonSet.clone(internalConstraintLayout);
-        optionButtonSet.connect(optionButton.getId(), ConstraintSet.BOTTOM,
-                mainTitleText.getId(), ConstraintSet.BOTTOM);
-        optionButtonSet.connect(optionButton.getId(), ConstraintSet.TOP,
-                mainTitleText.getId(), ConstraintSet.TOP);
-        optionButtonSet.connect(optionButton.getId(), ConstraintSet.END,
-                internalConstraintLayout.getId(), ConstraintSet.END, 0);
-        optionButtonSet.applyTo(internalConstraintLayout);
-
-        optionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPopup(view);
-            }
-        });
-    }
 }

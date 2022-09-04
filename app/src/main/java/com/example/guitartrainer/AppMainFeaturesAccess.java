@@ -15,8 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.example.guitartrainer.earTraining.EarTrainingActivity;
-import com.example.guitartrainer.fretboardVisualization.FretboardVisualizationActivity;
+import com.example.guitartrainer.earTraining.Activity;
 
 
 /**
@@ -50,7 +49,7 @@ public class AppMainFeaturesAccess extends Fragment {
                 layout,
                 getResources().getString(R.string.feature_name_ear_training),
                 R.drawable.ic_baseline_hearing_24,
-                EarTrainingActivity.class);
+                Activity.class);
 
         layout.addView(ear_training_button);
 
@@ -59,7 +58,7 @@ public class AppMainFeaturesAccess extends Fragment {
                 layout,
                 getResources().getString(R.string.fretboardVisualizationFeatureButton),
                 android.R.drawable.ic_menu_mapmode,
-                FretboardVisualizationActivity.class);
+                com.example.guitartrainer.fretboardVisualization.Activity.class);
 
         layout.addView(fretboard_visualization_button);
     }

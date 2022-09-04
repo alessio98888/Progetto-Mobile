@@ -1,9 +1,4 @@
-package com.example.guitartrainer.earTraining;
-
-/*
- * @(#) ProgrammableMetronomePresetProvider.java     1.0 05/01/2022
- */
-
+package com.example.guitartrainer.fretboardVisualization;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -20,29 +15,25 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.guitartrainer.ProviderReturn;
+import com.example.guitartrainer.earTraining.GuessFunctionLevel;
+
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- *
- *
- * @version
-1.00 05/01/2022
- * @author
-Alessio Ardu  */
-public class EarTrainingCardStatsProvider extends ContentProvider {
-    static final String PROVIDER_NAME = "com.example.guitartrainer.earTraining.EarTrainingCardStatsProvider";
-    static final String URL = "content://" + PROVIDER_NAME + "/EarTrainingCardStats";
+public class PlayFunctionsCardStatsProvider extends ContentProvider {
+    static final String PROVIDER_NAME = "com.example.guitartrainer.fretboardVisualization.PlayFunctionsCardStatsProvider";
+    static final String URL = "content://" + PROVIDER_NAME + "/PlayFunctionsCardStatsProvider";
     static final Uri CONTENT_URI = Uri.parse(URL);
 
     static final String CARD_ID_NAME = "cardIdName";
-    static final String SUCCESS_PERC_NAME = "successPerc";
+    static final String SUCCESS_SECONDS_NAME = "successSeconds";
     static final String LEVEL_TYPE = "levelType";
 
     private static Map<String, String> cardStatsMap;
 
     private SQLiteDatabase db;
-    static final String DATABASE_NAME = "EarTrainingCardStats";
+    static final String DATABASE_NAME = "PlayFunctionsCardStats";
     static final String CARD_STATS_TABLE_NAME = "cardStats";
     static final int DATABASE_VERSION = 1;
 
@@ -50,7 +41,7 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
             " CREATE TABLE " + CARD_STATS_TABLE_NAME + "( " +
                     CARD_ID_NAME + " TEXT PRIMARY KEY, " +
                     LEVEL_TYPE + " INTEGER NOT NULL, " +
-                    SUCCESS_PERC_NAME + " INTEGER" +
+                    SUCCESS_SECONDS_NAME + " INTEGER" +
                     ")";
 
     private static class DBWrapper extends SQLiteOpenHelper {
@@ -74,7 +65,8 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        DBWrapper dbHelper = new DBWrapper(context);
+        com.example.guitartrainer.fretboardVisualization.PlayFunctionsCardStatsProvider.DBWrapper dbHelper =
+                new com.example.guitartrainer.fretboardVisualization.PlayFunctionsCardStatsProvider.DBWrapper(context);
         db = dbHelper.getWritableDatabase();
         qb = new SQLiteQueryBuilder();
         qb.setProjectionMap(cardStatsMap);
@@ -94,7 +86,7 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return "com.example.guitartrainer.earTraining.EarTrainingCardStats";
+        return "com.example.guitartrainer.fretboardVisualization.PlayFunctionsCardStatsProvider";
     }
 
     @Nullable
@@ -110,12 +102,6 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         } else {
             return null;
         }
-    }
-
-    public enum InsertOrUpdateReturn{
-        Inserted,
-        Updated,
-        Error
     }
 
     public boolean existsCardId(String cardId){
@@ -139,32 +125,32 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
     }
 
 
-    public InsertOrUpdateReturn insertOrUpdateCard(EarTrainingCardStats cardStats){
+    public ProviderReturn.InsertOrUpdateReturn insertOrUpdateCard(CardStats cardStats){
         ContentValues newCardStatsValues = new ContentValues();
-        newCardStatsValues.put(EarTrainingCardStatsProvider.CARD_ID_NAME,
+        newCardStatsValues.put(CARD_ID_NAME,
                 cardStats.getCardUniqueId());
 
-        newCardStatsValues.put(EarTrainingCardStatsProvider.SUCCESS_PERC_NAME,
-                cardStats.getSuccessPerc());
+        newCardStatsValues.put(SUCCESS_SECONDS_NAME,
+                cardStats.getSuccessSeconds());
 
 
-        newCardStatsValues.put(EarTrainingCardStatsProvider.LEVEL_TYPE,
+        newCardStatsValues.put(LEVEL_TYPE,
                 cardStats.getLevelType().ordinal());
 
-        return insertOrUpdate(EarTrainingCardStatsProvider.CONTENT_URI, newCardStatsValues);
+        return insertOrUpdate(CONTENT_URI, newCardStatsValues);
     }
 
 
-    public InsertOrUpdateReturn insertOrUpdate(Uri uri, ContentValues values){
+    public ProviderReturn.InsertOrUpdateReturn insertOrUpdate(Uri uri, ContentValues values){
         Uri uriOut = null;
         boolean isAnUpdate = existsCardId(values.getAsString(CARD_ID_NAME));
 
         if (!isAnUpdate) {
             uriOut = insert(uri, values);
-            return InsertOrUpdateReturn.Inserted;
+            return ProviderReturn.InsertOrUpdateReturn.Inserted;
         }
-        if (values.getAsInteger(SUCCESS_PERC_NAME) == -1) {
-           values.remove(SUCCESS_PERC_NAME);
+        if (values.getAsInteger(SUCCESS_SECONDS_NAME) == -1) {
+            values.remove(SUCCESS_SECONDS_NAME);
         }
         String cardToUpdate = (String) values.get(CARD_ID_NAME);
         String selection = CARD_ID_NAME + " LIKE ?";
@@ -172,9 +158,9 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         int count = db.update(CARD_STATS_TABLE_NAME, values, selection, selectionArgs2);
         if (count <= 0) {
             Log.d("TAG", "Error when inserting new card stats");
-            return InsertOrUpdateReturn.Error;
+            return ProviderReturn.InsertOrUpdateReturn.Error;
         }
-        return InsertOrUpdateReturn.Updated;
+        return ProviderReturn.InsertOrUpdateReturn.Updated;
     }
 
     public int deleteCardStatsByName(Uri uri, String cardId){
@@ -197,8 +183,8 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         return DatabaseUtils.queryNumEntries(db, CARD_STATS_TABLE_NAME);
     }
 
-    public ArrayList<EarTrainingCardStats> getCardStats(){
-        ArrayList<EarTrainingCardStats> out = new ArrayList<>();
+    public ArrayList<CardStats> getCardStats(){
+        ArrayList<CardStats> out = new ArrayList<>();
 
         String sqlQuery = "SELECT * FROM " + CARD_STATS_TABLE_NAME;
 
@@ -207,15 +193,15 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         if (c!=null){
             c.moveToFirst();
             int indexCardId = c.getColumnIndex(CARD_ID_NAME);
-            int indexSuccessPerc = c.getColumnIndex(SUCCESS_PERC_NAME);
+            int indexSuccessSeconds = c.getColumnIndex(SUCCESS_SECONDS_NAME);
             int indexLevelType = c.getColumnIndex(LEVEL_TYPE);
 
             if (c.getCount() > 0){
                 do{
-                    out.add(new EarTrainingCardStats(
+                    out.add(new CardStats(
                             c.getString(indexCardId),
-                            c.getInt(indexSuccessPerc),
-                            EarTrainingGuessFunctionLevel.LevelType.values()[
+                            c.getInt(indexSuccessSeconds),
+                            PlayFunctionsLevel.LevelType.values()[
                                     c.getInt(indexLevelType)]));
                 }while(c.moveToNext());
             }
@@ -223,8 +209,8 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         return out;
     }
 
-    public int getSuccessPerc(String cardUniqueId){
-        int successPerc = -1;
+    public int getSuccessSeconds(String cardUniqueId){
+        int successSeconds = -1;
         String sqlQuery = "SELECT * FROM " + CARD_STATS_TABLE_NAME + " WHERE " + CARD_ID_NAME +
                 " LIKE ?";
         String[] selectionArgs = {cardUniqueId};
@@ -233,16 +219,15 @@ public class EarTrainingCardStatsProvider extends ContentProvider {
         if (c!=null){
             c.moveToFirst();
             int indexCardId = c.getColumnIndex(CARD_ID_NAME);
-            int indexSuccessPerc = c.getColumnIndex(SUCCESS_PERC_NAME);
+            int indexSuccessSeconds = c.getColumnIndex(SUCCESS_SECONDS_NAME);
 
             if (c.getCount() > 0){
                 do{
-                    successPerc = c.getInt(indexSuccessPerc);
+                    successSeconds = c.getInt(indexSuccessSeconds);
                 }while(c.moveToNext());
             }
         }
-        return successPerc;
+        return successSeconds;
     }
 
 }
-

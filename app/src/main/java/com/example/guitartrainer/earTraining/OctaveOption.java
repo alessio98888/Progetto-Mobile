@@ -2,7 +2,7 @@ package com.example.guitartrainer.earTraining;
 
 import androidx.annotation.NonNull;
 
-public class EarTrainingOctaveOption {
+public class OctaveOption {
 
     public enum EarTrainingOctaveOptionEnum {
         One_Octave("One Octave"),
@@ -24,7 +24,7 @@ public class EarTrainingOctaveOption {
 
     private EarTrainingOctaveOptionEnum octaveOption;
 
-    public EarTrainingOctaveOption(EarTrainingOctaveOptionEnum octaveOption) {
+    public OctaveOption(EarTrainingOctaveOptionEnum octaveOption) {
         this.octaveOption = octaveOption;
     }
 

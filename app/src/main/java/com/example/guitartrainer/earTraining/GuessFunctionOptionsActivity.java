@@ -1,24 +1,24 @@
-package com.example.guitartrainer.fretboardVisualization;
+package com.example.guitartrainer.earTraining;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-
 import com.example.guitartrainer.R;
 
-public class FretboardVisualizationOptionsActivity extends AppCompatActivity {
-    SwitchCompat noteNamesWithVoice;
+public class GuessFunctionOptionsActivity extends AppCompatActivity {
+    SwitchCompat automaticAnswersWithVoice;
     Button saveAndExit;
     Button cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fretboard_visualization_options);
+        setContentView(R.layout.activity_ear_training_guess_function_options);
 
         findViews();
         setStartingValueForTheAutomaticAnswersVoiceToFalse();
@@ -26,14 +26,14 @@ public class FretboardVisualizationOptionsActivity extends AppCompatActivity {
     }
 
     private void findViews() {
-        noteNamesWithVoice = findViewById(R.id.fretboard_visualization_answersWithVoiceSwitch);
-        saveAndExit = findViewById(R.id.fretboard_visualization_options_save_and_exit);
-        cancel = findViewById(R.id.fretboard_visualization_options_cancel);
+        automaticAnswersWithVoice = findViewById(R.id.answersWithVoiceSwitch);
+        saveAndExit = findViewById(R.id.save_and_exit);
+        cancel = findViewById(R.id.cancel);
     }
 
     private void setStartingValueForTheAutomaticAnswersVoiceToFalse() {
-        noteNamesWithVoice.setChecked(getIntent().getBooleanExtra(
-                "noteNamesWithVoice",
+        automaticAnswersWithVoice.setChecked(getIntent().getBooleanExtra(
+                "automaticAnswersWithVoice",
                 false));
     }
 
@@ -47,7 +47,7 @@ public class FretboardVisualizationOptionsActivity extends AppCompatActivity {
         });
         saveAndExit.setOnClickListener(view -> {
             Intent data = new Intent();
-            data.putExtra("noteNamesWithVoice", noteNamesWithVoice.isChecked());
+            data.putExtra("automaticAnswersWithVoice", automaticAnswersWithVoice.isChecked());
             setResult(RESULT_OK, data);
             finish();
         });

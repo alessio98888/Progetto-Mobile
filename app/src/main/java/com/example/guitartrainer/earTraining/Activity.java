@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.guitartrainer.R;
 
-public class EarTrainingActivity extends AppCompatActivity {
+public class Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

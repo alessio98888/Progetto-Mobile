@@ -1,14 +1,12 @@
 package com.example.guitartrainer.earTraining;
 
-public class EarTrainingCardStats {
+public class CardStats {
     private String cardUniqueId;
     private int successPerc;
+    private GuessFunctionLevel.LevelType levelType;
 
-
-    private EarTrainingGuessFunctionLevel.LevelType levelType;
-
-    public EarTrainingCardStats(String cardUniqueId, int successPerc,
-                                EarTrainingGuessFunctionLevel.LevelType levelType) {
+    public CardStats(String cardUniqueId, int successPerc,
+                     GuessFunctionLevel.LevelType levelType) {
         this.cardUniqueId = cardUniqueId;
         this.successPerc = successPerc;
         this.levelType = levelType;
@@ -31,11 +29,11 @@ public class EarTrainingCardStats {
         this.successPerc = successPerc;
     }
 
-    public EarTrainingGuessFunctionLevel.LevelType getLevelType() {
+    public GuessFunctionLevel.LevelType getLevelType() {
         return levelType;
     }
 
-    public void setLevelType(EarTrainingGuessFunctionLevel.LevelType levelType) {
+    public void setLevelType(GuessFunctionLevel.LevelType levelType) {
         this.levelType = levelType;
     }
 }
