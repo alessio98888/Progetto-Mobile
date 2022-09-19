@@ -1,5 +1,7 @@
 package com.example.guitartrainer.fretboardVisualization;
 
+import androidx.fragment.app.Fragment;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -14,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.os.Handler;
@@ -23,7 +24,6 @@ import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,24 +40,25 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 
-public class PlayFunctionExecutionPage extends Fragment {
+public class RealGuitarExecutionPage extends Fragment {
+    final int minFrequencyAllowed = 190;
     int currentRound = 0;
     static final int MAX_ROUND = 3;
     TextView currentRoundText;
     long startTimestamp;
     boolean gameEnded = false;
 
-    private PlayFunctionsLevel.LevelType levelType;
-    private MusicalScale.ScaleMode scaleMode;
-    private String cardUniqueId;
-    private boolean noteNamesWithVoice;
-    private ArrayList<MusicalNote.MusicalNoteName> rootNotesNames;
-    private ArrayList<Integer> functionsToPlay;
-    private boolean competitiveMode;
+    PlayFunctionsLevel.LevelType levelType;
+    MusicalScale.ScaleMode scaleMode;
+    String cardUniqueId;
+    boolean voiceSynthMode;
+    ArrayList<MusicalNote.MusicalNoteName> rootNotesNames;
+    ArrayList<Integer> functionsToPlay;
+    boolean competitiveMode;
 
-    private TextToSpeech textToSpeech;
-    private UtteranceProgressListener utteranceProgressListener;
-    private boolean doneSpeaking;
+    TextToSpeech textToSpeech;
+    UtteranceProgressListener utteranceProgressListener;
+    boolean doneSpeaking;
 
 
     TunerEngine tuner;
@@ -67,7 +68,7 @@ public class PlayFunctionExecutionPage extends Fragment {
             //readFreqText.setText(Double.toString(tuner.currentVolume));
 
             if(!gameEnded){
-                if(noteNamesWithVoice){
+                if(voiceSynthMode){
                     if(doneSpeaking){
                         calculateIfMatchedNote(tuner.currentFrequency);
                     }
@@ -79,18 +80,18 @@ public class PlayFunctionExecutionPage extends Fragment {
 
     };
 
-    private MusicalNote.MusicalNoteName currentRootNote;
-    private TextView rootNoteText;
+    MusicalNote.MusicalNoteName currentRootNote;
+    TextView rootNoteText;
 
-    private int currentFunctionToPlay;
-    private TextView functionToPlayText;
+    int currentFunctionToPlay;
+    TextView functionToPlayText;
 
-    private MusicalNote.MusicalNoteName noteToPlay;
+    MusicalNote.MusicalNoteName noteToPlay;
 
-    private TextView scaleModeText;
+    TextView scaleModeText;
 
     public void calculateIfMatchedNote(double frequency){
-        if(frequency > 70){
+        if(frequency > minFrequencyAllowed){
             frequency = FrequencyOperations.normaliseFreq(frequency);
             int note = FrequencyOperations.closestNote(frequency);
             double matchFreq = FrequencyOperations.FREQUENCIES[note];
@@ -102,22 +103,42 @@ public class PlayFunctionExecutionPage extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_play_function_execution_page, container, false);
-    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        noteNamesWithVoice = getArguments().getBoolean(
+        initWithArguments();
+
+        initViews();
+
+        if (voiceSynthMode)
+            initTextToSpeech();
+
+        checkPermissionsAndStartGame();
+    }
+
+    public void checkPermissionsAndStartGame() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(
+                    getActivity(),
+                    getResources().getString(R.string.fretboardVisualizationRecordAudioPermissionText),
+                    Toast.LENGTH_SHORT).show();
+
+            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
+        } else {
+            if(voiceSynthMode){
+                // Already started after the initialization of the voice synth
+                return;
+            }
+            startGame();
+        }
+    }
+
+    public void initWithArguments(){
+        voiceSynthMode = getArguments().getBoolean(
                 "automaticAnswersWithVoice",
                 false);
-
-        if (noteNamesWithVoice) {
-            initTextToSpeech();
-        }
 
         scaleMode = MusicalScale.ScaleMode.values()[
                 getArguments().getInt("scaleMode")];
@@ -134,34 +155,18 @@ public class PlayFunctionExecutionPage extends Fragment {
         functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
 
         competitiveMode = getArguments().getBoolean("competitiveMode");
+    }
 
-        if (!noteNamesWithVoice) {
-
-        }
+    public void initViews() {
         currentRoundText = requireView().findViewById(R.id.fretboardPlayFunctionCurrentRoundText);
 
         rootNoteText = requireView().findViewById(R.id.playFunctionsExecutionRootNoteText);
         functionToPlayText = requireView().findViewById(R.id.playFunctionsExecutionFunctionToPlayText);
         scaleModeText = requireView().findViewById(R.id.playFunctionsExecutionScaleMode);
         scaleModeText.setText(scaleMode.toString());
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            Toast.makeText(
-                    getActivity(),
-                    getResources().getString(R.string.fretboardVisualizationRecordAudioPermissionText),
-                    Toast.LENGTH_SHORT).show();
-
-            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
-        } else {
-            if(noteNamesWithVoice){
-                // Already started after the initialization of the voice synth
-                return;
-            }
-            startGame();
-        }
     }
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+    public final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
             new ActivityResultCallback<Boolean>() {
                 @Override
@@ -178,8 +183,7 @@ public class PlayFunctionExecutionPage extends Fragment {
     public void startGame(){
 
         try {
-            tuner = new TunerEngine(mHandler,callback);
-            tuner.start();
+            initGame();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -190,11 +194,26 @@ public class PlayFunctionExecutionPage extends Fragment {
         nextRound();
     }
 
+    public void initGame() {
+        tuner = new TunerEngine(mHandler,callback);
+        tuner.start();
+    }
+
+    public void firstThingsToDoAfterGameEnds()
+    {
+
+    }
+
+    public boolean gameIsEnded(){
+        return currentRound == MAX_ROUND;
+    }
     public void nextRound(){
 
         if(competitiveMode){
-            if(currentRound == MAX_ROUND){
-                Long resultTime = System.currentTimeMillis()/1000 - startTimestamp;
+            if(gameIsEnded()){
+                int resultTime = (int) (System.currentTimeMillis()/1000 - startTimestamp);
+                firstThingsToDoAfterGameEnds();
+
                 showCompetitiveResults(resultTime);
                 gameEnded = true;
                 return;
@@ -203,18 +222,12 @@ public class PlayFunctionExecutionPage extends Fragment {
             updateCurrentRoundText();
         }
 
-        generateNextRootNoteAndFunctionToPlay();
+        initRound();
 
-        if (noteNamesWithVoice) {
-            doneSpeaking = false;
-            textToSpeech.speak(MusicalNote.getSpeakableNoteName(noteToPlay),
-                    TextToSpeech.QUEUE_FLUSH, null,
-                    TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
 
-        }
     }
 
-    private void showCompetitiveResults(Long resultTime){
+    public void showCompetitiveResults(int resultTime){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 
         final View POPUP_VIEW =
@@ -247,30 +260,52 @@ public class PlayFunctionExecutionPage extends Fragment {
         });
     }
 
-    private void updateCurrentRoundText(){
+    public void updateCurrentRoundText(){
         String text = String.format(getResources().getString(R.string.ear_training_round_text),
                 Integer.toString(currentRound), Integer.toString(MAX_ROUND));
         currentRoundText.setText(text);
 
     }
 
-    private void navigateToMainPage(){
+    public void navigateToMainPage(){
         Navigation.findNavController(getView()).navigate(R.id.action_playFunctionExecutionPage_to_fretboardVisualizationMainPage2);
     }
 
-    private void generateNextRootNoteAndFunctionToPlay() {
+    public void initRound() {
+        generateRoundQuestions();
+
+        updateUI();
+
+        if (voiceSynthMode) {
+
+            String whatToSpeak = getWhatToSpeak();
+            speak(whatToSpeak);
+        }
+    }
+
+    public String getWhatToSpeak() {
+        return MusicalNote.getSpeakableNoteName(currentRootNote) + currentFunctionToPlay;
+    }
+
+    public void generateRoundQuestions() {
         Random rand = new Random();
         currentRootNote = rootNotesNames.get(rand.nextInt(rootNotesNames.size()));
 
         MusicalScaleNote randomNote = MusicalScale.getRandomScaleNote(currentRootNote, scaleMode, functionsToPlay);
         currentFunctionToPlay = randomNote.getMusicalFunction();
         noteToPlay = randomNote.getNoteName();
+    }
 
-        updateWhatToPlayInUI();
+    public void speak(String whatToSpeak) {
+        doneSpeaking = false;
+        textToSpeech.speak(whatToSpeak,
+                TextToSpeech.QUEUE_FLUSH, null,
+                TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
+
     }
 
     @SuppressLint("SetTextI18n")
-    public void updateWhatToPlayInUI(){
+    public void updateUI(){
         functionToPlayText.setText(Integer.toString(currentFunctionToPlay));
         rootNoteText.setText(currentRootNote.toString());
     }
@@ -286,6 +321,7 @@ public class PlayFunctionExecutionPage extends Fragment {
             public void onDone(String s) {
                 Log.i("TextToSpeech","On Done");
 
+                doneSpeaking = true;
                 //getActivity().runOnUiThread(() -> playNextRound());
             }
 
@@ -307,6 +343,7 @@ public class PlayFunctionExecutionPage extends Fragment {
                     }
 
                     textToSpeech.setOnUtteranceProgressListener(utteranceProgressListener);
+                    startGame();
                 } else {
                     Log.e("TTS", "Failed");
                 }
@@ -317,7 +354,7 @@ public class PlayFunctionExecutionPage extends Fragment {
     public void onDetach() {
         super.onDetach();
 
-        if(noteNamesWithVoice) {
+        if(voiceSynthMode) {
             textToSpeech.shutdown();
         }
     }

@@ -30,8 +30,8 @@ import java.util.Map;
  * @author
 Alessio Ardu  */
 public class CardStatsProvider extends ContentProvider {
-    static final String PROVIDER_NAME = "com.example.guitartrainer.earTraining.EarTrainingCardStatsProvider";
-    static final String URL = "content://" + PROVIDER_NAME + "/EarTrainingCardStats";
+    static final String PROVIDER_NAME = "com.example.guitartrainer.earTraining.CardStatsProvider";
+    static final String URL = "content://" + PROVIDER_NAME + "/CardStats";
     static final Uri CONTENT_URI = Uri.parse(URL);
 
     static final String CARD_ID_NAME = "cardIdName";
@@ -41,7 +41,7 @@ public class CardStatsProvider extends ContentProvider {
     private static Map<String, String> cardStatsMap;
 
     private SQLiteDatabase db;
-    static final String DATABASE_NAME = "EarTrainingCardStats";
+    static final String DATABASE_NAME = "CardStats";
     static final String CARD_STATS_TABLE_NAME = "cardStats";
     static final int DATABASE_VERSION = 1;
 
@@ -93,7 +93,7 @@ public class CardStatsProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return "com.example.guitartrainer.earTraining.EarTrainingCardStats";
+        return "com.example.guitartrainer.earTraining.CardStats";
     }
 
     @Nullable

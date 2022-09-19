@@ -33,7 +33,7 @@ import com.example.guitartrainer.earTraining.MusicalNote;
 import java.util.Locale;
 
 
-public class RootNotesTrainerExecutionPage extends Fragment {
+public class RealGuitarRootNotesTrainerExecutionPage extends Fragment {
 
     boolean noteNamesWithVoice;
 
@@ -70,7 +70,6 @@ public class RootNotesTrainerExecutionPage extends Fragment {
         }
 
     };
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,7 +116,6 @@ public class RootNotesTrainerExecutionPage extends Fragment {
             }
             startGame();
         }
-
     }
 
     public void initTextToSpeech() {
@@ -183,17 +181,16 @@ public class RootNotesTrainerExecutionPage extends Fragment {
             e.printStackTrace();
         }
 
-
-
         startTimestamp = System.currentTimeMillis()/1000;
         nextRound();
     }
 
-
     public void calculateIfMatchedNote(double frequency){
-        if(frequency > 70){
+        if(frequency > 190){
             frequency = FrequencyOperations.normaliseFreq(frequency);
+            Log.e("Norm Freq: ", Double.toString(frequency));
             int note = FrequencyOperations.closestNote(frequency);
+            Log.e("Note index: ", Integer.toString(note));
             double matchFreq = FrequencyOperations.FREQUENCIES[note];
 
             if(FrequencyOperations.NOTES[note].equals(noteToPlay)){
@@ -201,9 +198,9 @@ public class RootNotesTrainerExecutionPage extends Fragment {
             }
             readFreqText.setText(FrequencyOperations.NOTES[note].toString());
         }
-
-
-
+        else{
+            readFreqText.setText("None");
+        }
     }
 
     public void nextRound(){
@@ -225,7 +222,6 @@ public class RootNotesTrainerExecutionPage extends Fragment {
             textToSpeech.speak(MusicalNote.getSpeakableNoteName(noteToPlay),
                     TextToSpeech.QUEUE_FLUSH, null,
                     TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
-
         }
     }
 
@@ -270,7 +266,6 @@ public class RootNotesTrainerExecutionPage extends Fragment {
         String text = String.format(getResources().getString(R.string.ear_training_round_text),
                 Integer.toString(currentRound), Integer.toString(MAX_ROUND));
         currentRoundText.setText(text);
-
     }
 
     @Override

@@ -82,6 +82,8 @@ public class TunerEngine extends Thread {
                 mHandler.post(callback);
                 try {
                     targetDataLine_.stop();
+                    Log.e("Volume: ", Double.toString(calculateVolume(bufferRead)));
+                    Log.e("Freq: ", Double.toString(currentFrequency));
                     //currentVolume = calculateVolume(bufferRead);
                     Thread.sleep(20);
                     targetDataLine_.startRecording();
