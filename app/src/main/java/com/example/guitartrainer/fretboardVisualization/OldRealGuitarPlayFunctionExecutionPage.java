@@ -1,14 +1,24 @@
 package com.example.guitartrainer.fretboardVisualization;
 
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,44 +26,40 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
-import android.os.Handler;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.MusicalNote;
 import com.example.guitartrainer.earTraining.MusicalScale;
 import com.example.guitartrainer.earTraining.MusicalScaleNote;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
-public class RealGuitarExecutionPage extends Fragment {
-    final int minFrequencyAllowed = 190;
+public class OldRealGuitarPlayFunctionExecutionPage extends Fragment {
     int currentRound = 0;
     static final int MAX_ROUND = 3;
     TextView currentRoundText;
     long startTimestamp;
     boolean gameEnded = false;
 
-    boolean voiceSynthMode;
-    boolean competitiveMode;
+    private PlayFunctionsLevel.LevelType levelType;
+    private MusicalScale.ScaleMode scaleMode;
+    private String cardUniqueId;
+    private boolean noteNamesWithVoice;
+    private ArrayList<MusicalNote.MusicalNoteName> rootNotesNames;
+    private ArrayList<Integer> functionsToPlay;
+    private boolean competitiveMode;
 
-    MusicalNote.MusicalNoteName noteToPlay;
-    TextToSpeech textToSpeech;
-    UtteranceProgressListener utteranceProgressListener;
-    boolean doneSpeaking;
+    private TextToSpeech textToSpeech;
+    private UtteranceProgressListener utteranceProgressListener;
+    private boolean doneSpeaking;
 
-    int resultTime;
 
     TunerEngine tuner;
     final Handler mHandler = new Handler();
@@ -62,7 +68,7 @@ public class RealGuitarExecutionPage extends Fragment {
             //readFreqText.setText(Double.toString(tuner.currentVolume));
 
             if(!gameEnded){
-                if(voiceSynthMode){
+                if(noteNamesWithVoice){
                     if(doneSpeaking){
                         calculateIfMatchedNote(tuner.currentFrequency);
                     }
@@ -74,9 +80,18 @@ public class RealGuitarExecutionPage extends Fragment {
 
     };
 
+    private MusicalNote.MusicalNoteName currentRootNote;
+    private TextView rootNoteText;
+
+    private int currentFunctionToPlay;
+    private TextView functionToPlayText;
+
+    private MusicalNote.MusicalNoteName noteToPlay;
+
+    private TextView scaleModeText;
 
     public void calculateIfMatchedNote(double frequency){
-        if(frequency > minFrequencyAllowed){
+        if(frequency > 190){
             frequency = FrequencyOperations.normaliseFreq(frequency);
             int note = FrequencyOperations.closestNote(frequency);
             double matchFreq = FrequencyOperations.FREQUENCIES[note];
@@ -88,21 +103,48 @@ public class RealGuitarExecutionPage extends Fragment {
         }
     }
 
-
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_play_function_execution_page, container, false);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initWithArguments();
+        noteNamesWithVoice = getArguments().getBoolean(
+                "automaticAnswersWithVoice",
+                false);
 
-        initViews();
-
-        if (voiceSynthMode)
+        if (noteNamesWithVoice) {
             initTextToSpeech();
+        }
 
-        checkPermissionsAndStartGame();
-    }
+        scaleMode = MusicalScale.ScaleMode.values()[
+                getArguments().getInt("scaleMode")];
 
-    public void checkPermissionsAndStartGame() {
+        cardUniqueId = getArguments().getString("cardUniqueId");
+
+        levelType = PlayFunctionsLevel.LevelType.values()[
+                getArguments().getInt("levelType")];
+
+        int[] rootNotesArray = getArguments().getIntArray("rootNotes");
+        rootNotesNames = MusicalNote.toMusicalNotesNames(
+                (ArrayList<Integer>) Arrays.stream(rootNotesArray).boxed().collect(Collectors.toList()));
+
+        functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
+
+        competitiveMode = getArguments().getBoolean("competitiveMode");
+
+        if (!noteNamesWithVoice) {
+
+        }
+        currentRoundText = requireView().findViewById(R.id.fretboardPlayFunctionCurrentRoundText);
+
+        rootNoteText = requireView().findViewById(R.id.playFunctionsExecutionRootNoteText);
+        functionToPlayText = requireView().findViewById(R.id.playFunctionsExecutionFunctionToPlayText);
+        scaleModeText = requireView().findViewById(R.id.playFunctionsExecutionScaleMode);
+        scaleModeText.setText(scaleMode.toString());
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
             Toast.makeText(
@@ -112,7 +154,7 @@ public class RealGuitarExecutionPage extends Fragment {
 
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
         } else {
-            if(voiceSynthMode){
+            if(noteNamesWithVoice){
                 // Already started after the initialization of the voice synth
                 return;
             }
@@ -120,16 +162,7 @@ public class RealGuitarExecutionPage extends Fragment {
         }
     }
 
-    public void initWithArguments(){
-        throw new UnsupportedOperationException();
-    }
-
-    public void initViews() {
-        currentRoundText = requireView().findViewById(R.id.fretboardPlayFunctionCurrentRoundText);
-
-    }
-
-    public final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
             new ActivityResultCallback<Boolean>() {
                 @Override
@@ -144,8 +177,10 @@ public class RealGuitarExecutionPage extends Fragment {
     );
 
     public void startGame(){
+
         try {
-            initGame();
+            tuner = new TunerEngine(mHandler,callback);
+            tuner.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,22 +191,29 @@ public class RealGuitarExecutionPage extends Fragment {
         nextRound();
     }
 
-    public void initGame() {
-        tuner = new TunerEngine(mHandler,callback);
-        tuner.start();
-    }
+    public void saveLevelStats(int successSeconds){
+        ContentResolver resolver = getActivity().getContentResolver();
 
-    public void firstThingsToDoAfterGameEnds() {
-        throw new UnsupportedOperationException();
+        ContentProviderClient client = resolver.acquireContentProviderClient(
+                PlayFunctionsCardStatsProvider.CONTENT_URI);
+
+        PlayFunctionsCardStatsProvider provider =
+                (PlayFunctionsCardStatsProvider) client.getLocalContentProvider();
+
+        provider.insertOrUpdateCard(new CardStats(
+                cardUniqueId,
+                successSeconds,
+                levelType
+        ));
     }
 
     public void nextRound(){
 
         if(competitiveMode){
-            if(gameIsEnded()){
-                resultTime = (int) (System.currentTimeMillis()/1000 - startTimestamp);
-                firstThingsToDoAfterGameEnds();
+            if(currentRound == MAX_ROUND){
+                int resultTime = (int) (System.currentTimeMillis()/1000 - startTimestamp);
 
+                saveLevelStats(resultTime);
                 showCompetitiveResults(resultTime);
                 gameEnded = true;
                 return;
@@ -180,14 +222,18 @@ public class RealGuitarExecutionPage extends Fragment {
             updateCurrentRoundText();
         }
 
-        initRound();
+        generateNextRootNoteAndFunctionToPlay();
+
+        if (noteNamesWithVoice) {
+            doneSpeaking = false;
+            textToSpeech.speak(MusicalNote.getSpeakableNoteName(currentRootNote) + currentFunctionToPlay,
+                    TextToSpeech.QUEUE_FLUSH, null,
+                    TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
+
+        }
     }
 
-    public boolean gameIsEnded(){
-        return currentRound == MAX_ROUND;
-    }
-
-    public void showCompetitiveResults(int resultTime){
+    private void showCompetitiveResults(int resultTime){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 
         final View POPUP_VIEW =
@@ -220,48 +266,32 @@ public class RealGuitarExecutionPage extends Fragment {
         });
     }
 
-    public void updateCurrentRoundText(){
+    private void updateCurrentRoundText(){
         String text = String.format(getResources().getString(R.string.ear_training_round_text),
                 Integer.toString(currentRound), Integer.toString(MAX_ROUND));
         currentRoundText.setText(text);
 
     }
 
-    public void navigateToMainPage(){
-        throw new UnsupportedOperationException();
+    private void navigateToMainPage(){
+        Navigation.findNavController(getView()).navigate(R.id.action_playFunctionExecutionPage_to_fretboardVisualizationMainPage2);
     }
 
-    public void initRound() {
-        setNoteToPlay();
+    private void generateNextRootNoteAndFunctionToPlay() {
+        Random rand = new Random();
+        currentRootNote = rootNotesNames.get(rand.nextInt(rootNotesNames.size()));
 
-        updateUI();
+        MusicalScaleNote randomNote = MusicalScale.getRandomScaleNote(currentRootNote, scaleMode, functionsToPlay);
+        currentFunctionToPlay = randomNote.getMusicalFunction();
+        noteToPlay = randomNote.getNoteName();
 
-        if (voiceSynthMode) {
-
-            String whatToSpeak = getWhatToSpeak();
-            speak(whatToSpeak);
-        }
-    }
-
-    public String getWhatToSpeak() {
-         throw new UnsupportedOperationException();
-    }
-
-    public void setNoteToPlay() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void speak(String whatToSpeak) {
-        doneSpeaking = false;
-        textToSpeech.speak(whatToSpeak,
-                TextToSpeech.QUEUE_FLUSH, null,
-                TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
-
+        updateWhatToPlayInUI();
     }
 
     @SuppressLint("SetTextI18n")
-    public void updateUI(){
-        throw new UnsupportedOperationException();
+    public void updateWhatToPlayInUI(){
+        functionToPlayText.setText(Integer.toString(currentFunctionToPlay));
+        rootNoteText.setText(currentRootNote.toString());
     }
 
     public void initTextToSpeech(){
@@ -308,12 +338,8 @@ public class RealGuitarExecutionPage extends Fragment {
     public void onDetach() {
         super.onDetach();
 
-        closeResources();
-        if(voiceSynthMode) {
+        if(noteNamesWithVoice) {
             textToSpeech.shutdown();
         }
-    }
-    public void closeResources(){
-        tuner.close();
     }
 }

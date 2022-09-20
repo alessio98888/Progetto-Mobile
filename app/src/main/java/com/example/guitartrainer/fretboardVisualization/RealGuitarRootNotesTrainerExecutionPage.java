@@ -33,43 +33,12 @@ import com.example.guitartrainer.earTraining.MusicalNote;
 import java.util.Locale;
 
 
-public class RealGuitarRootNotesTrainerExecutionPage extends Fragment {
+public class RealGuitarRootNotesTrainerExecutionPage extends RealGuitarExecutionPage {
 
-    boolean noteNamesWithVoice;
 
-    boolean competitiveMode;
-    int currentRound = 0;
-    static final int MAX_ROUND = 3;
-    TextView currentRoundText;
-    long startTimestamp;
-    boolean gameEnded = false;
-
-    MusicalNote.MusicalNoteName noteToPlay;
     TextView noteToPlayText;
-    boolean doneSpeaking;
-    TextView readFreqText;
+    private View readFreqText;
 
-    TextToSpeech textToSpeech;
-    UtteranceProgressListener utteranceProgressListener;
-
-    TunerEngine tuner;
-    final Handler mHandler = new Handler();
-    final Runnable callback = new Runnable() {
-        public void run() {
-            //readFreqText.setText(Double.toString(tuner.currentVolume));
-
-            if(!gameEnded){
-                if(noteNamesWithVoice){
-                    if(doneSpeaking){
-                        calculateIfMatchedNote(tuner.currentFrequency);
-                    }
-                } else {
-                    calculateIfMatchedNote(tuner.currentFrequency);
-                }
-            }
-        }
-
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,206 +53,40 @@ public class RealGuitarRootNotesTrainerExecutionPage extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        noteNamesWithVoice = getArguments().getBoolean(
+    public void initViews(){
+        super.initViews();
+
+        readFreqText = requireActivity().findViewById(R.id.testo);
+        noteToPlayText = requireActivity().findViewById(R.id.noteToPlayText);
+    }
+
+    @Override
+    public void setNoteToPlay(){
+        noteToPlay = MusicalNote.getRandomNoteWithoutOctave();
+    }
+
+    @Override
+    public String getWhatToSpeak(){
+        return MusicalNote.getSpeakableNoteName(noteToPlay);
+    }
+
+    @Override
+    public void updateUI(){
+        noteToPlayText.setText(noteToPlay.toString());
+    }
+
+    @Override
+    public void initWithArguments(){
+        voiceSynthMode = getArguments().getBoolean(
                 "noteNamesWithVoice",
                 false);
 
-        competitiveMode = getArguments().getBoolean(
-                "rootNamesCompetitiveMode",
-                false);
-        currentRoundText = requireActivity().findViewById(R.id.fretboardRootVisualizationCurrentRoundText);
-
-        if (noteNamesWithVoice) {
-            initTextToSpeech();
-        }
-
-        readFreqText = getActivity().findViewById(R.id.testo);
-        noteToPlayText = requireActivity().findViewById(R.id.noteToPlayText);
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            Toast.makeText(
-                    getActivity(),
-                    getResources().getString(R.string.fretboardVisualizationRecordAudioPermissionText),
-                    Toast.LENGTH_SHORT).show();
-
-            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
-        } else {
-            if(noteNamesWithVoice){
-                // Already started after the initialization of the voice synth
-                return;
-            }
-            startGame();
-        }
+        competitiveMode = getArguments().getBoolean("rootNamesCompetitiveMode");
     }
 
-    public void initTextToSpeech() {
-        utteranceProgressListener = new UtteranceProgressListener() {
-            @Override
-            public void onStart(String s) {
-
-            }
-
-            @Override
-            public void onDone(String s) {
-
-                doneSpeaking = true;
-                //getActivity().runOnUiThread(() -> startGame());
-            }
-
-            @Override
-            public void onError(String s) {
-
-            }
-        };
-        textToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    int result = textToSpeech.setLanguage(Locale.getDefault());
-
-                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        textToSpeech.setLanguage(Locale.ENGLISH);
-                        Log.e("TTS", "Language not supported");
-                    }
-
-                    textToSpeech.setOnUtteranceProgressListener(utteranceProgressListener);
-                    startGame();
-                } else {
-                    Log.e("TTS", "Failed");
-                }
-            }
-        });
-    }
-
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(),
-            new ActivityResultCallback<Boolean>() {
-                @Override
-                public void onActivityResult(Boolean granted) {
-                    if (granted) {
-                        startGame();
-                    } else {
-                        requireActivity().finish();
-                    }
-                }
-            }
-    );
-
-    public void startGame(){
-
-        try {
-            tuner = new TunerEngine(mHandler,callback);
-            tuner.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        startTimestamp = System.currentTimeMillis()/1000;
-        nextRound();
-    }
-
-    public void calculateIfMatchedNote(double frequency){
-        if(frequency > 190){
-            frequency = FrequencyOperations.normaliseFreq(frequency);
-            Log.e("Norm Freq: ", Double.toString(frequency));
-            int note = FrequencyOperations.closestNote(frequency);
-            Log.e("Note index: ", Integer.toString(note));
-            double matchFreq = FrequencyOperations.FREQUENCIES[note];
-
-            if(FrequencyOperations.NOTES[note].equals(noteToPlay)){
-                nextRound();
-            }
-            readFreqText.setText(FrequencyOperations.NOTES[note].toString());
-        }
-        else{
-            readFreqText.setText("None");
-        }
-    }
-
-    public void nextRound(){
-
-        if(competitiveMode){
-            if(currentRound == MAX_ROUND){
-                Long resultTime = System.currentTimeMillis()/1000 - startTimestamp;
-                showCompetitiveResults(resultTime);
-                gameEnded = true;
-                return;
-            }
-            currentRound += 1;
-            updateCurrentRoundText();
-        }
-        noteToPlay = MusicalNote.getRandomNoteWithoutOctave();
-        noteToPlayText.setText(noteToPlay.toString());
-        if (noteNamesWithVoice) {
-            doneSpeaking = false;
-            textToSpeech.speak(MusicalNote.getSpeakableNoteName(noteToPlay),
-                    TextToSpeech.QUEUE_FLUSH, null,
-                    TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
-        }
-    }
-
-    private void showCompetitiveResults(Long resultTime){
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-
-        final View POPUP_VIEW =
-                ((LayoutInflater) getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE )).
-                        inflate(R.layout.end_of_guess_function_level_popup, null);
-
-        Button continueButton = POPUP_VIEW.findViewById(R.id.continue_button);
-
-        TextView resultTimeText = POPUP_VIEW.findViewById(R.id.success_perc_text_popup);
-        String text = String.format(getResources().getString(R.string.seconds),
-                resultTime);
-        resultTimeText.setText(text);
-
-        dialogBuilder.setView(POPUP_VIEW);
-        AlertDialog dialog = dialogBuilder.create();
-        continueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                navigateToMainPage();
-            }
-        });
-
-        dialog.show();
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                navigateToMainPage();
-            }
-        });
-    }
-
-    private void navigateToMainPage(){
+    @Override
+    public void navigateToMainPage(){
         Navigation.findNavController(getView()).navigate(R.id.action_fretboardVisualizationRootNotesTrainer_to_fretboardVisualizationMainPage2);
     }
-
-    private void updateCurrentRoundText(){
-        String text = String.format(getResources().getString(R.string.ear_training_round_text),
-                Integer.toString(currentRound), Integer.toString(MAX_ROUND));
-        currentRoundText.setText(text);
-    }
-
-    @Override
-    public void onPause(){
-        closeTuner();
-        super.onPause();
-    }
-
-    @Override
-    public void onDetach(){
-        super.onDetach();
-        closeTuner();
-        if(noteNamesWithVoice) {
-            textToSpeech.shutdown();
-        }
-    }
-
-    public void closeTuner(){
-            tuner.close();
-    }
 }
+
