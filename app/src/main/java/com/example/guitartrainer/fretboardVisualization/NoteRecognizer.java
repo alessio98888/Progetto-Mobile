@@ -6,12 +6,17 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 import android.util.Log;
 
+import com.example.guitartrainer.earTraining.MusicalNote;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * User: Yarden
  * Date: Oct 19, 2009
  * Time: 10:48:47 PM
  */
-public class TunerEngine extends Thread {
+public class NoteRecognizer extends Thread implements NoteSource{
 
     static {
         System.loadLibrary("FFT");
@@ -22,21 +27,48 @@ public class TunerEngine extends Thread {
     private static final int[] OPT_SAMPLE_RATES = {11025, 8000, 22050, 44100};
     private static final int[] BUFFERSIZE_PER_SAMPLE_RATE = {8 * 1024, 4 * 1024, 16 * 1024, 32 * 1024};
 
+    private static final int MIN_FREQUENCY_ALLOWED = 190;
     public double currentFrequency = 0.0;
     public double currentVolume = 0.0;
+
+    List<Observer> observers = new ArrayList<>();
 
     int SAMPLE_RATE = 8000;
     int READ_BUFFERSIZE = 4 * 1024;
 
     AudioRecord targetDataLine_;
 
-    final Handler mHandler;
-    Runnable callback;
+    final Handler mHandler = new Handler();
+    final Runnable callback = new Runnable() {
+        public void run() {
+            //readFreqText.setText(Double.toString(tuner.currentVolume));
 
-    public TunerEngine(Handler mHandler, Runnable callback) {
-        this.mHandler = mHandler;
-        this.callback = callback;
+           for(Observer o : observers){
+               o.update(getNote());
+           }
+        }
+    };
+
+    public NoteRecognizer() {
+
         initAudioRecord();
+        start();
+    }
+
+    @Override
+    public MusicalNote.MusicalNoteName getNote(){
+        if(currentFrequency > MIN_FREQUENCY_ALLOWED) {
+            double frequency = FrequencyOperations.normaliseFreq(currentFrequency);
+            int noteIdx = FrequencyOperations.closestNote(frequency);
+            MusicalNote.MusicalNoteName playedNote = FrequencyOperations.NOTES[noteIdx];
+            return playedNote;
+        }
+        return null;
+    }
+
+    @Override
+    public void register(Observer o){
+        observers.add(o);
     }
 
     private void initAudioRecord() {
@@ -134,9 +166,16 @@ public class TunerEngine extends Thread {
             throw new RuntimeException();
         }
     }
-    public void close(){
+
+    @Override
+    public void closeSource(){
         //targetDataLine_.stop();
         targetDataLine_.release();
+    }
+
+    @Override
+    public void startSource(){
+        start();
     }
 
 }

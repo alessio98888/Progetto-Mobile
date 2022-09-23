@@ -368,7 +368,7 @@ double singleHanning(double value,int i,int windowLength){
                     (windowLength - 1))));
 }
 
-jdouble Java_com_example_guitartrainer_fretboardVisualization_TunerEngine_processSampleData(JNIEnv*  env,jobject thiz,jbyteArray sample,jint sampleRate){
+jdouble Java_com_example_guitartrainer_fretboardVisualization_NoteRecognizer_processSampleData(JNIEnv*  env, jobject thiz, jbyteArray sample, jint sampleRate){
     jsize sampleLength = (*env)->GetArrayLength(env,sample);
     jbyte* localSample = (*env)->GetByteArrayElements(env,sample,0);
     double padSample[sampleLength/2];

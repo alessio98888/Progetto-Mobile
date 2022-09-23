@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.Navigation;
 
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -30,15 +29,11 @@ import android.widget.Toast;
 
 import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.MusicalNote;
-import com.example.guitartrainer.earTraining.MusicalScale;
-import com.example.guitartrainer.earTraining.MusicalScaleNote;
 
 import java.util.Locale;
-import java.util.Random;
 
 
-public class RealGuitarExecutionPage extends Fragment {
-    final int minFrequencyAllowed = 190;
+public class RealGuitarExecutionPage extends Fragment implements Observer {
     int currentRound = 0;
     static final int MAX_ROUND = 3;
     TextView currentRoundText;
@@ -47,6 +42,7 @@ public class RealGuitarExecutionPage extends Fragment {
 
     boolean voiceSynthMode;
     boolean competitiveMode;
+    boolean fakeGuitarMode;
 
     MusicalNote.MusicalNoteName noteToPlay;
     TextToSpeech textToSpeech;
@@ -55,46 +51,30 @@ public class RealGuitarExecutionPage extends Fragment {
 
     int resultTime;
 
-    TunerEngine tuner;
-    final Handler mHandler = new Handler();
-    final Runnable callback = new Runnable() {
-        public void run() {
-            //readFreqText.setText(Double.toString(tuner.currentVolume));
-
-            if(!gameEnded){
-                if(voiceSynthMode){
-                    if(doneSpeaking){
-                        calculateIfMatchedNote(tuner.currentFrequency);
-                    }
-                } else {
-                    calculateIfMatchedNote(tuner.currentFrequency);
-                }
-            }
-        }
-
-    };
+    NoteSource noteSource;
 
 
-    public void calculateIfMatchedNote(double frequency){
-        if(frequency > minFrequencyAllowed){
-            frequency = FrequencyOperations.normaliseFreq(frequency);
-            int note = FrequencyOperations.closestNote(frequency);
-            double matchFreq = FrequencyOperations.FREQUENCIES[note];
 
-            if(FrequencyOperations.NOTES[note].equals(noteToPlay)){
-                nextRound();
-            }
-            //readFreqText.setText(FrequencyOperations.NOTES[note].toString());
-        }
-    }
+    // initNoteSource() -> if fake: ... else if real ...
+    // If fake fretboard in arguments
+    // Set landscape, enable fake fretboard (enable the fragment that contains the fake fretboard)
+    // Observe the fake fretboard (instead of running the tuner)
+    // When a click on the fretboard happens, inform listeners of new note and check if equal to the note to play
 
 
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initWithArguments();
-
         initViews();
+
+        if(fakeGuitarMode){
+            noteSource = new NoteRecognizer();
+        } else {
+            noteSource = new NoteRecognizer();
+        }
+        noteSource.register(this);
+
 
         if (voiceSynthMode)
             initTextToSpeech();
@@ -102,9 +82,30 @@ public class RealGuitarExecutionPage extends Fragment {
         checkPermissionsAndStartGame();
     }
 
+    @Override
+    public void update(Object o) {
+        MusicalNote.MusicalNoteName playedNote = (MusicalNote.MusicalNoteName) o;
+        if(!gameEnded && playedNote != null){
+
+            if(voiceSynthMode){
+                if(doneSpeaking){
+                    calculateIfMatchedNote(playedNote);
+                }
+            } else {
+                calculateIfMatchedNote(playedNote);
+            }
+
+        }
+    }
+
+    public void calculateIfMatchedNote(MusicalNote.MusicalNoteName playedNote){
+        if(playedNote.equals(noteToPlay)){
+            nextRound();
+        }
+    }
+
     public void checkPermissionsAndStartGame() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
             Toast.makeText(
                     getActivity(),
                     getResources().getString(R.string.fretboardVisualizationRecordAudioPermissionText),
@@ -125,8 +126,6 @@ public class RealGuitarExecutionPage extends Fragment {
     }
 
     public void initViews() {
-        currentRoundText = requireView().findViewById(R.id.fretboardPlayFunctionCurrentRoundText);
-
     }
 
     public final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
@@ -157,8 +156,6 @@ public class RealGuitarExecutionPage extends Fragment {
     }
 
     public void initGame() {
-        tuner = new TunerEngine(mHandler,callback);
-        tuner.start();
     }
 
     public void firstThingsToDoAfterGameEnds() {
@@ -224,7 +221,6 @@ public class RealGuitarExecutionPage extends Fragment {
         String text = String.format(getResources().getString(R.string.ear_training_round_text),
                 Integer.toString(currentRound), Integer.toString(MAX_ROUND));
         currentRoundText.setText(text);
-
     }
 
     public void navigateToMainPage(){
@@ -304,6 +300,7 @@ public class RealGuitarExecutionPage extends Fragment {
             }
         });
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -313,7 +310,10 @@ public class RealGuitarExecutionPage extends Fragment {
             textToSpeech.shutdown();
         }
     }
+
     public void closeResources(){
-        tuner.close();
+        noteSource.closeSource();
     }
+
+
 }

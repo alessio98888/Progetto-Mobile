@@ -56,6 +56,7 @@ public class RealGuitarRootNotesTrainerExecutionPage extends RealGuitarExecution
     public void initViews(){
         super.initViews();
 
+        currentRoundText = requireView().findViewById(R.id.fretboardRootVisualizationCurrentRoundText);
         readFreqText = requireActivity().findViewById(R.id.testo);
         noteToPlayText = requireActivity().findViewById(R.id.noteToPlayText);
     }
@@ -78,10 +79,12 @@ public class RealGuitarRootNotesTrainerExecutionPage extends RealGuitarExecution
     @Override
     public void initWithArguments(){
         voiceSynthMode = getArguments().getBoolean(
-                "noteNamesWithVoice",
+                Options.VOICE_SYNTH_MODE_KEY,
                 false);
 
-        competitiveMode = getArguments().getBoolean("rootNamesCompetitiveMode");
+        competitiveMode = getArguments().getBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY);
+
+        fakeGuitarMode = getArguments().getBoolean(Options.FAKE_GUITAR_MODE_KEY);
     }
 
     @Override

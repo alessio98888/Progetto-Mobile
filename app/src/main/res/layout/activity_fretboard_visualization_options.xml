@@ -18,15 +18,37 @@
         app:layout_constraintStart_toEndOf="@+id/fretboard_visualization_voiceSynthTextView"
         app:layout_constraintTop_toBottomOf="@+id/fretboard_visualization_options_activity_title" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/fretboard_visualization_fakeGuitarSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.055"
+        app:layout_constraintStart_toEndOf="@+id/fretboard_visualization_fakeGuitarTextView"
+        app:layout_constraintTop_toBottomOf="@+id/fretboard_visualization_answersWithVoiceSwitch" />
+
     <TextView
         android:id="@+id/fretboard_visualization_voiceSynthTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:text="@string/voice_synthesizer"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/fretboard_visualization_options_activity_title"
         app:layout_constraintTop_toBottomOf="@+id/fretboard_visualization_options_activity_title" />
+
+    <TextView
+        android:id="@+id/fretboard_visualization_fakeGuitarTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="@string/fake_guitar_mode"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/fretboard_visualization_voiceSynthTextView"
+        app:layout_constraintTop_toBottomOf="@+id/fretboard_visualization_voiceSynthTextView" />
 
     <TextView
         android:id="@+id/fretboard_visualization_options_activity_title"

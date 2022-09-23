@@ -11,7 +11,9 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.example.guitartrainer.R;
 
 public class OptionsActivity extends AppCompatActivity {
-    SwitchCompat noteNamesWithVoice;
+
+    SwitchCompat voiceSynthModeSwitch;
+    SwitchCompat fakeGuitarModeSwitch;
     Button saveAndExit;
     Button cancel;
 
@@ -20,20 +22,30 @@ public class OptionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fretboard_visualization_options);
 
-        findViews();
-        setStartingValueForTheAutomaticAnswersVoiceToFalse();
+        initViews();
+        initVoiceSynthSwitch();
+        initFakeGuitarSwitch();
+
         setAcceptButtonsClickListeners();
     }
 
-    private void findViews() {
-        noteNamesWithVoice = findViewById(R.id.fretboard_visualization_answersWithVoiceSwitch);
+    private void initViews() {
+        voiceSynthModeSwitch = findViewById(R.id.fretboard_visualization_answersWithVoiceSwitch);
+        fakeGuitarModeSwitch = findViewById(R.id.fretboard_visualization_fakeGuitarSwitch);
+
         saveAndExit = findViewById(R.id.fretboard_visualization_options_save_and_exit);
         cancel = findViewById(R.id.fretboard_visualization_options_cancel);
     }
 
-    private void setStartingValueForTheAutomaticAnswersVoiceToFalse() {
-        noteNamesWithVoice.setChecked(getIntent().getBooleanExtra(
-                "noteNamesWithVoice",
+    private void initVoiceSynthSwitch() {
+        voiceSynthModeSwitch.setChecked(getIntent().getBooleanExtra(
+                Options.VOICE_SYNTH_MODE_KEY,
+                false));
+    }
+
+    private void initFakeGuitarSwitch() {
+        fakeGuitarModeSwitch.setChecked(getIntent().getBooleanExtra(
+                Options.FAKE_GUITAR_MODE_KEY,
                 false));
     }
 
@@ -47,7 +59,8 @@ public class OptionsActivity extends AppCompatActivity {
         });
         saveAndExit.setOnClickListener(view -> {
             Intent data = new Intent();
-            data.putExtra("noteNamesWithVoice", noteNamesWithVoice.isChecked());
+            data.putExtra(Options.VOICE_SYNTH_MODE_KEY, voiceSynthModeSwitch.isChecked());
+            data.putExtra(Options.FAKE_GUITAR_MODE_KEY, fakeGuitarModeSwitch.isChecked());
             setResult(RESULT_OK, data);
             finish();
         });

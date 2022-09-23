@@ -45,19 +45,21 @@ public class MainPage extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fretboard_visualization_main_page, container, false);
     }
-    // Option defaults
-    private static final boolean DEFAULT_NOTE_NAMES_WITH_VOICE = false;
-    private static final boolean DEFAULT_ROOT_NAMES_COMPETITIVE_MODE = false;
-
-    private static final boolean DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE = false;
 
     private SharedPreferences.Editor editor;
+
+    // Option defaults
+    private static final boolean DEFAULT_NOTE_NAMES_WITH_VOICE = false;
+    private static final boolean DEFAULT_FAKE_GUITAR_MODE = false;
+
+    private static final boolean DEFAULT_ROOT_NAMES_COMPETITIVE_MODE = false;
+    private static final boolean DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE = false;
+
     // Actual option values
     private boolean actualNoteNamesWithVoice = DEFAULT_NOTE_NAMES_WITH_VOICE;
+    private boolean actualFakeGuitarMode = DEFAULT_FAKE_GUITAR_MODE;
     private boolean actualRootNotesCompetitiveMode = DEFAULT_ROOT_NAMES_COMPETITIVE_MODE;
-
-    private boolean actualNoteNamesWithVoicePlayFunction;
-    private boolean actualPlayFunctionsCompetitiveMode;
+    private boolean actualPlayFunctionsCompetitiveMode = DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE;
 
     ActivityResultLauncher<Intent> optionsActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -65,18 +67,19 @@ public class MainPage extends Fragment {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
                         Intent data = result.getData();
-                        boolean noteNamesWithVoiceFromPref = data.getBooleanExtra(
-                                "noteNamesWithVoice",
+                        boolean noteNamesWithVoiceFromOptions = data.getBooleanExtra(
+                                Options.VOICE_SYNTH_MODE_KEY,
                                 DEFAULT_NOTE_NAMES_WITH_VOICE
                         );
 
-                        setActualNoteNamesWithVoice(noteNamesWithVoiceFromPref);
+                        boolean fakeGuitarModeFromOptions = data.getBooleanExtra(
+                                Options.FAKE_GUITAR_MODE_KEY,
+                                DEFAULT_FAKE_GUITAR_MODE
+                        );
 
-                        editor.putBoolean("noteNamesWithVoice",
-                                noteNamesWithVoiceFromPref);
-                        editor.apply();
+                        setActualFakeGuitarMode(fakeGuitarModeFromOptions);
+                        setActualNoteNamesWithVoice(noteNamesWithVoiceFromOptions);
                     }
                 }
             });
@@ -97,18 +100,31 @@ public class MainPage extends Fragment {
 
     public void openOptionsActivityForResult() {
         Intent intent = new Intent(getContext(), OptionsActivity.class);
-        intent.putExtra("noteNamesWithVoice", actualNoteNamesWithVoice);
+        intent.putExtra(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
+        intent.putExtra(Options.FAKE_GUITAR_MODE_KEY, actualFakeGuitarMode);
         optionsActivityResultLauncher.launch(intent);
+    }
+
+    public void setActualFakeGuitarMode(boolean actualFakeGuitarMode) {
+       this.actualFakeGuitarMode = actualFakeGuitarMode;
+
+       editor.putBoolean(Options.FAKE_GUITAR_MODE_KEY,
+                actualFakeGuitarMode);
+       editor.apply();
     }
 
     public void setActualNoteNamesWithVoice(boolean actualNoteNamesWithVoice) {
         this.actualNoteNamesWithVoice = actualNoteNamesWithVoice;
+
+        editor.putBoolean(Options.VOICE_SYNTH_MODE_KEY,
+                actualNoteNamesWithVoice);
+        editor.apply();
     }
 
     public void setActualRootNotesCompetitiveMode(boolean rootNotesCompetitiveMode) {
         this.actualRootNotesCompetitiveMode = rootNotesCompetitiveMode;
 
-        editor.putBoolean("rootNotesCompetitiveMode", actualRootNotesCompetitiveMode);
+        editor.putBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, actualRootNotesCompetitiveMode);
         editor.apply();
         updateRootNamesCardBackground();
     }
@@ -116,7 +132,7 @@ public class MainPage extends Fragment {
     public void setActualPlayFunctionsCompetitiveMode(boolean playFunctionsCompetitiveMode){
        this.actualPlayFunctionsCompetitiveMode = playFunctionsCompetitiveMode;
 
-       editor.putBoolean("playFunctionsCompetitiveMode", actualPlayFunctionsCompetitiveMode);
+       editor.putBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, actualPlayFunctionsCompetitiveMode);
        editor.apply();
        updatePlayFunctionsCardBackground();
     }
@@ -144,10 +160,11 @@ public class MainPage extends Fragment {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-        setActualNoteNamesWithVoice(sharedPref.getBoolean("noteNamesWithVoice", DEFAULT_NOTE_NAMES_WITH_VOICE));
+        setActualNoteNamesWithVoice(sharedPref.getBoolean(Options.VOICE_SYNTH_MODE_KEY, DEFAULT_NOTE_NAMES_WITH_VOICE));
+        setActualFakeGuitarMode(sharedPref.getBoolean(Options.FAKE_GUITAR_MODE_KEY, DEFAULT_FAKE_GUITAR_MODE));
+        setActualRootNotesCompetitiveMode(sharedPref.getBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, DEFAULT_ROOT_NAMES_COMPETITIVE_MODE));
+        setActualPlayFunctionsCompetitiveMode(sharedPref.getBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE));
 
-        setActualRootNotesCompetitiveMode(sharedPref.getBoolean("rootNotesCompetitiveMode", DEFAULT_ROOT_NAMES_COMPETITIVE_MODE));
-        setActualPlayFunctionsCompetitiveMode(sharedPref.getBoolean("playFunctionsCompetitiveMode", DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE));
         updateRootNamesCardBackground();
 
         initRootNotesButton();
@@ -163,8 +180,9 @@ public class MainPage extends Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("noteNamesWithVoice", actualNoteNamesWithVoice);
-                bundle.putBoolean("rootNamesCompetitiveMode", actualRootNotesCompetitiveMode);
+                bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
+                bundle.putBoolean(Options.FAKE_GUITAR_MODE_KEY, actualFakeGuitarMode);
+                bundle.putBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, actualRootNotesCompetitiveMode);
 
                 Navigation.findNavController(view).navigate(
                         R.id.action_fretboardVisualizationMainPage2_to_fretboardVisualizationRootNotesTrainer, bundle);
@@ -188,8 +206,8 @@ public class MainPage extends Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("noteNamesWithVoice", actualNoteNamesWithVoice);
-                bundle.putBoolean("playFunctionsCompetitiveMode", actualPlayFunctionsCompetitiveMode);
+                bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
+                bundle.putBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, actualPlayFunctionsCompetitiveMode);
 
                 Navigation.findNavController(view).navigate(
                         R.id.action_fretboardVisualizationMainPage2_to_playFunctionsMainPage, bundle);

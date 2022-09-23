@@ -32,6 +32,9 @@
         <argument
             android:name="rootNamesCompetitiveMode"
             app:argType="boolean" />
+        <argument
+            android:name="fakeGuitarMode"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/playFunctionsMainPage"
