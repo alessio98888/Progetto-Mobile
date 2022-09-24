@@ -273,7 +273,6 @@ public class PlayFunctionsLevel {
     public static CardView addCustomCardAdder(Context context, CardView cardAbove,
                                               ConstraintLayout parentLayout, View view) {
 
-
         CardView cardview = new CardView(context);
         ConstraintSet set = new ConstraintSet();
         cardview.setId(View.generateViewId());
@@ -417,7 +416,6 @@ public class PlayFunctionsLevel {
                         }
                     });
 
-
                     // The default selected item(for the popup window presets spinner) will be the first preset
                     rootNameSpinner.setSelection(0);
                     scaleModeSpinner.setSelection(0);
@@ -457,7 +455,6 @@ public class PlayFunctionsLevel {
                                     -1
                             );
 
-
                             ContentResolver resolver = ((Activity)view.getContext()).getContentResolver();
 
                             ContentProviderClient client = resolver.acquireContentProviderClient(
@@ -492,8 +489,6 @@ public class PlayFunctionsLevel {
         );
         return cardview;
     }
-
-
 
     public CardStats getCardStats() {
         return new CardStats(getUniqueCardId(), getSuccessSeconds(), getLevelType());

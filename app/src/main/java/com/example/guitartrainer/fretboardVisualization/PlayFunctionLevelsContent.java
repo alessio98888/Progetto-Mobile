@@ -26,15 +26,12 @@ import java.util.ArrayList;
  */
 public class PlayFunctionLevelsContent extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_MUSICAL_SCALE = "musicalScale";
     private static final String ARG_MUSICAL_NOTE = "musicalNote";
     private static final String ARG_FUNCTIONS_TO_PLAY = "functionsToPlay";
     private static final String ARG_CUSTOM_LEVEL = "customLevel";
     private static final String ARG_SUCCESS_SECONDS = "successSeconds";
 
-    // TODO: Rename and change types of parameters
     private MusicalScale.ScaleMode musicalScale;
     private MusicalNote.MusicalNoteName musicalNote;
     private ArrayList<Integer> functionsToPlay;

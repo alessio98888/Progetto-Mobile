@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -17,13 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +34,7 @@ import com.example.guitartrainer.earTraining.MusicalNote;
 import java.util.Locale;
 
 
-public class RealGuitarExecutionPage extends Fragment implements Observer {
+public class ExecutionPage extends Fragment implements Observer {
     int currentRound = 0;
     static final int MAX_ROUND = 3;
     TextView currentRoundText;
@@ -53,28 +54,36 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
 
     NoteSource noteSource;
 
-
-
     // initNoteSource() -> if fake: ... else if real ...
     // If fake fretboard in arguments
     // Set landscape, enable fake fretboard (enable the fragment that contains the fake fretboard)
     // Observe the fake fretboard (instead of running the tuner)
     // When a click on the fretboard happens, inform listeners of new note and check if equal to the note to play
 
-
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initWithArguments();
         initViews();
 
+        NoteSourceFactory noteSourceFactory = new NoteSourceFactory();
         if(fakeGuitarMode){
-            noteSource = new NoteRecognizer();
-        } else {
-            noteSource = new NoteRecognizer();
-        }
-        noteSource.register(this);
 
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            noteSource = noteSourceFactory.create(NoteSourceTypes.NoteSourceType.FakeGuitarStandardTuning22Frets);
+
+            FrameLayout fakeGuitarFragmentContainer =
+                    requireActivity().findViewById(R.id.fretboard_visualization_root_notes_fragment_container);
+
+            requireActivity().getFragmentManager().beginTransaction().
+                    add(fakeGuitarFragmentContainer.getId(), (FakeGuitar) noteSource, "someTag2").commit();
+            //setLayout(landscape)
+            //fragmentContainer.add(noteSource);
+
+        } else {
+            noteSource = noteSourceFactory.create(NoteSourceTypes.NoteSourceType.NoteRecognizer);
+        }
+
+        noteSource.register(this);
 
         if (voiceSynthMode)
             initTextToSpeech();
@@ -86,7 +95,6 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
     public void update(Object o) {
         MusicalNote.MusicalNoteName playedNote = (MusicalNote.MusicalNoteName) o;
         if(!gameEnded && playedNote != null){
-
             if(voiceSynthMode){
                 if(doneSpeaking){
                     calculateIfMatchedNote(playedNote);
@@ -94,7 +102,6 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
             } else {
                 calculateIfMatchedNote(playedNote);
             }
-
         }
     }
 
@@ -233,7 +240,6 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
         updateUI();
 
         if (voiceSynthMode) {
-
             String whatToSpeak = getWhatToSpeak();
             speak(whatToSpeak);
         }
@@ -252,7 +258,6 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
         textToSpeech.speak(whatToSpeak,
                 TextToSpeech.QUEUE_FLUSH, null,
                 TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -301,6 +306,7 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
         });
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onDetach() {
         super.onDetach();
@@ -309,6 +315,7 @@ public class RealGuitarExecutionPage extends Fragment implements Observer {
         if(voiceSynthMode) {
             textToSpeech.shutdown();
         }
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     public void closeResources(){

@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/fretboardVisualizationRootNotesTrainer"
-        android:name="com.example.guitartrainer.fretboardVisualization.RealGuitarRootNotesTrainerExecutionPage"
+        android:name="com.example.guitartrainer.fretboardVisualization.RootNotesTrainerExecutionPage"
         android:label="fragment_fretboard_visualization_root_notes_trainer"
         tools:layout="@layout/fragment_fretboard_visualization_root_notes_trainer" >
         <action
@@ -56,7 +56,7 @@
     </fragment>
     <fragment
         android:id="@+id/playFunctionExecutionPage"
-        android:name="com.example.guitartrainer.fretboardVisualization.RealGuitarPlayFunctionExecutionPage"
+        android:name="com.example.guitartrainer.fretboardVisualization.PlayFunctionExecutionPage"
         android:label="fragment_play_function_execution_page"
         tools:layout="@layout/fragment_play_function_execution_page" >
         <action

@@ -50,7 +50,6 @@ public class PlayFunctionsMainPage extends Fragment {
     private boolean competitiveMode;
     private boolean noteNamesWithVoice;
 
-
     private static PlayFunctionsMainPage instance;
     private SharedPreferences.Editor editor;
     @Override
@@ -75,7 +74,6 @@ public class PlayFunctionsMainPage extends Fragment {
         competitiveMode = requireArguments().getBoolean("playFunctionsCompetitiveMode");
         noteNamesWithVoice = requireArguments().getBoolean("noteNamesWithVoice");
 
-
         parentLayout = (requireView().findViewById(R.id.playFunctionsMainPageRootLayout));
         initializeAndAddDefaultCards();
 
@@ -83,10 +81,10 @@ public class PlayFunctionsMainPage extends Fragment {
 
         getCustomLevelsFromProvider();
 
-
         // Just destroy(finish) activity when back pressed
         overrideBackButtonBehaviour(); // Preventing bug: back pressed after level completion
     }
+
     public void initializeAndAddDefaultCards() {
         ContentResolver resolver = getActivity().getContentResolver();
 
@@ -97,11 +95,9 @@ public class PlayFunctionsMainPage extends Fragment {
         PlayFunctionsCardStatsProvider provider =
                 (PlayFunctionsCardStatsProvider) client.getLocalContentProvider();
 
-
         MusicalNote.MusicalNoteName rootNoteCard = MusicalNote.MusicalNoteName.c;
         MusicalScale.ScaleMode scaleCard =  MusicalScale.ScaleMode.Major;
         ArrayList<Integer> functionsToPlay = new ArrayList<>(Arrays.asList(1,3,5));
-
 
         // DEFAULT 1
         PlayFunctionsLevel default1 = new PlayFunctionsLevel(getActivity(),
@@ -115,7 +111,6 @@ public class PlayFunctionsMainPage extends Fragment {
         MusicalNote.MusicalNoteName rootNoteCard2 = MusicalNote.MusicalNoteName.c;
         MusicalScale.ScaleMode scaleCard2 =  MusicalScale.ScaleMode.Major;
         ArrayList<Integer> functionsToPlay2 = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7));
-
 
         // DEFAULT 1
         PlayFunctionsLevel default2 = new PlayFunctionsLevel(getActivity(),
@@ -143,6 +138,7 @@ public class PlayFunctionsMainPage extends Fragment {
             }
         }
     }
+
     public String getScoreTextUsingProvider(PlayFunctionsCardStatsProvider provider, String cardUniqueId) {
         int successSeconds = provider.getSuccessSeconds(cardUniqueId);
         String scoreText;
@@ -154,6 +150,7 @@ public class PlayFunctionsMainPage extends Fragment {
         }
         return scoreText;
     }
+
     public void addCardToBottom(PlayFunctionsLevel newManager) {
         CardView above;
         if (cardManagers.size() == 0) {
@@ -201,7 +198,6 @@ public class PlayFunctionsMainPage extends Fragment {
                     cardManager.getMusicalNote().ordinal());
         }
 
-
         Bundle bundle = new Bundle();
         bundle.putIntArray("rootNotes", convertIntegers(rootNotes));
         bundle.putInt("scaleMode", cardManager.getMusicalScale().ordinal());
@@ -214,6 +210,7 @@ public class PlayFunctionsMainPage extends Fragment {
         Navigation.findNavController(view).navigate(
                 R.id.action_playFunctionsMainPage_to_playFunctionExecutionPage, bundle);
     }
+
     public static int[] convertIntegers(List<Integer> integers)
     {
         int[] ret = new int[integers.size()];
@@ -223,6 +220,7 @@ public class PlayFunctionsMainPage extends Fragment {
         }
         return ret;
     }
+
     public void deleteCard(PlayFunctionsLevel levelToDelete) {
 
         ConstraintSet set = new ConstraintSet();
