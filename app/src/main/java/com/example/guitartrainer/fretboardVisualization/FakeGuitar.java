@@ -59,7 +59,7 @@ public class FakeGuitar extends Fragment implements NoteSource {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fake_guitar, container, false);
+        View view = inflater.inflate(R.layout.fragment_fake_guitar_scaled, container, false);
 
         setButtonNoteListeners(view);
 

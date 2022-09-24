@@ -16,11 +16,10 @@
         android:layout_height="wrap_content"
         android:textColor="#E6D8D8"
         android:textSize="200sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fretboard_visualization_root_notes_fragment_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.379"
         tools:text="Ab" />
 
     <TextView
