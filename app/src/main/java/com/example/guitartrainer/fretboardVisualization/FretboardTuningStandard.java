@@ -52,7 +52,7 @@ public class FretboardTuningStandard extends FretboardTuning{
 
                 MusicalNote.MusicalNoteName noteToPut =
                         MusicalNote.MusicalNoteName.values()[
-                                (openStringNote.ordinal() + fret) % 11];
+                                (openStringNote.ordinal() + fret) % 12];
 
                 standardMap.put(new GuitarFretboardNotesKey(fret, string), noteToPut);
             }

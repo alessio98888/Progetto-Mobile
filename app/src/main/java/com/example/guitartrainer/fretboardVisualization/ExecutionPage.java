@@ -68,6 +68,8 @@ public class ExecutionPage extends Fragment implements Observer {
         NoteSourceFactory noteSourceFactory = new NoteSourceFactory();
         if(fakeGuitarMode){
 
+            TextView t = requireActivity().findViewById(R.id.noteToPlayText);
+            t.setTextSize(30);
             requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             noteSource = noteSourceFactory.create(NoteSourceTypes.NoteSourceType.FakeGuitarStandardTuning22Frets);
 
