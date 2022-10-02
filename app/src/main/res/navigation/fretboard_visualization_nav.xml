@@ -30,7 +30,7 @@
             app:argType="boolean"
             android:defaultValue="false" />
         <argument
-            android:name="rootNamesCompetitiveMode"
+            android:name="competitiveMode"
             app:argType="boolean" />
         <argument
             android:name="fakeGuitarMode"
@@ -45,7 +45,7 @@
             android:id="@+id/action_playFunctionsMainPage_to_fretboardVisualizationMainPage2"
             app:destination="@id/fretboardVisualizationMainPage2" />
         <argument
-            android:name="playFunctionsCompetitiveMode"
+            android:name="competitiveMode"
             app:argType="boolean" />
         <argument
             android:name="noteNamesWithVoice"

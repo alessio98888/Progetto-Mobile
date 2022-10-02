@@ -54,12 +54,6 @@ public class ExecutionPage extends Fragment implements Observer {
 
     NoteSource noteSource;
 
-    // initNoteSource() -> if fake: ... else if real ...
-    // If fake fretboard in arguments
-    // Set landscape, enable fake fretboard (enable the fragment that contains the fake fretboard)
-    // Observe the fake fretboard (instead of running the tuner)
-    // When a click on the fretboard happens, inform listeners of new note and check if equal to the note to play
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initWithArguments();
@@ -67,7 +61,6 @@ public class ExecutionPage extends Fragment implements Observer {
 
         NoteSourceFactory noteSourceFactory = new NoteSourceFactory();
         if(fakeGuitarMode){
-
             TextView t = requireActivity().findViewById(R.id.noteToPlayText);
             t.setTextSize(30);
             requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -78,8 +71,6 @@ public class ExecutionPage extends Fragment implements Observer {
 
             requireActivity().getFragmentManager().beginTransaction().
                     add(fakeGuitarFragmentContainer.getId(), (FakeGuitar) noteSource, "someTag2").commit();
-            //setLayout(landscape)
-            //fragmentContainer.add(noteSource);
 
         } else {
             noteSource = noteSourceFactory.create(NoteSourceTypes.NoteSourceType.NoteRecognizer);
@@ -114,7 +105,7 @@ public class ExecutionPage extends Fragment implements Observer {
     }
 
     public void checkPermissionsAndStartGame() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (!fakeGuitarMode && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(
                     getActivity(),
                     getResources().getString(R.string.fretboardVisualizationRecordAudioPermissionText),
@@ -168,7 +159,7 @@ public class ExecutionPage extends Fragment implements Observer {
     }
 
     public void firstThingsToDoAfterGameEnds() {
-        throw new UnsupportedOperationException();
+
     }
 
     public void nextRound(){
@@ -213,7 +204,7 @@ public class ExecutionPage extends Fragment implements Observer {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                navigateToMainPage();
+                GoToMainPage();
             }
         });
 
@@ -221,7 +212,7 @@ public class ExecutionPage extends Fragment implements Observer {
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                navigateToMainPage();
+                GoToMainPage();
             }
         });
     }
@@ -232,12 +223,14 @@ public class ExecutionPage extends Fragment implements Observer {
         currentRoundText.setText(text);
     }
 
-    public void navigateToMainPage(){
-        throw new UnsupportedOperationException();
+    public void GoToMainPage(){
+
+        requireActivity().onBackPressed();
+        setOrientationToPortrait();
     }
 
     public void initRound() {
-        setNoteToPlay();
+        generateNoteToPlay();
 
         updateUI();
 
@@ -251,7 +244,7 @@ public class ExecutionPage extends Fragment implements Observer {
          throw new UnsupportedOperationException();
     }
 
-    public void setNoteToPlay() {
+    public void generateNoteToPlay() {
         throw new UnsupportedOperationException();
     }
 
@@ -308,7 +301,6 @@ public class ExecutionPage extends Fragment implements Observer {
         });
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onDetach() {
         super.onDetach();
@@ -317,6 +309,11 @@ public class ExecutionPage extends Fragment implements Observer {
         if(voiceSynthMode) {
             textToSpeech.shutdown();
         }
+        setOrientationToPortrait();
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    public void setOrientationToPortrait(){
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 

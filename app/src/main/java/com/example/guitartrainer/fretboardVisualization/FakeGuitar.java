@@ -56,6 +56,7 @@ public class FakeGuitar extends Fragment implements NoteSource {
             tuning = (FretboardTuning) getArguments().getSerializable(ARG_FRETBOARD_TUNING);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

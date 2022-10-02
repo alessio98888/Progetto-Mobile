@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 public abstract class FretboardTuning implements Serializable {
-    private static final long serialVersionUID = 0L;
 
+    private static final long serialVersionUID = 1L;
     abstract Map<GuitarFretboardNotesKey, MusicalNote.MusicalNoteName> getMap();
 
     abstract int getMAX_FRET();

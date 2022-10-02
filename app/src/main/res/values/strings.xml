@@ -100,4 +100,6 @@
     <string name="enableRootNotesCompetitiveMode">Enable Competitive Mode</string>
     <string name="seconds" translatable="false">%1$ds</string>
     <string name="fake_guitar_mode">Fake Guitar Mode</string>
+    <string name="competitive_mode">Competitive Mode</string>
+    <string name="functions">Functions</string>
 </resources>

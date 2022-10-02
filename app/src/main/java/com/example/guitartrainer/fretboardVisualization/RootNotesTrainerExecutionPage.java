@@ -2,8 +2,6 @@ package com.example.guitartrainer.fretboardVisualization;
 
 import android.os.Bundle;
 
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +39,7 @@ public class RootNotesTrainerExecutionPage extends ExecutionPage {
     }
 
     @Override
-    public void setNoteToPlay(){
+    public void generateNoteToPlay(){
         noteToPlay = MusicalNote.getRandomNoteWithoutOctave();
     }
 
@@ -61,14 +59,11 @@ public class RootNotesTrainerExecutionPage extends ExecutionPage {
                 Options.VOICE_SYNTH_MODE_KEY,
                 false);
 
-        competitiveMode = getArguments().getBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY);
+        competitiveMode = getArguments().getBoolean(Options.COMPETITIVE_MODE_KEY);
 
         fakeGuitarMode = getArguments().getBoolean(Options.FAKE_GUITAR_MODE_KEY);
     }
 
-    @Override
-    public void navigateToMainPage(){
-        Navigation.findNavController(getView()).navigate(R.id.action_fretboardVisualizationRootNotesTrainer_to_fretboardVisualizationMainPage2);
-    }
+
 }
 

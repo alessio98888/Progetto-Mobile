@@ -63,7 +63,7 @@ public class PlayFunctionExecutionPage extends ExecutionPage {
     }
 
     @Override
-    public void setNoteToPlay(){
+    public void generateNoteToPlay(){
         Random rand = new Random();
         currentRootNote = rootNotesNames.get(rand.nextInt(rootNotesNames.size()));
 
@@ -104,11 +104,6 @@ public class PlayFunctionExecutionPage extends ExecutionPage {
         functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
 
         competitiveMode = getArguments().getBoolean("competitiveMode");
-    }
-
-    @Override
-    public void navigateToMainPage(){
-        Navigation.findNavController(getView()).navigate(R.id.action_playFunctionExecutionPage_to_fretboardVisualizationMainPage2);
     }
 
     @Override

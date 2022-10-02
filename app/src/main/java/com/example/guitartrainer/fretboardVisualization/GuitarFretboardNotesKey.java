@@ -1,6 +1,8 @@
 package com.example.guitartrainer.fretboardVisualization;
 
-public class GuitarFretboardNotesKey {
+import java.io.Serializable;
+
+public class GuitarFretboardNotesKey implements Serializable {
 
     private final int fret; // From 0
     private final int string; // From 1

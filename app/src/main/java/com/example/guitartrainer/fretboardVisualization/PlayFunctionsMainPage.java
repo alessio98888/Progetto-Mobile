@@ -71,8 +71,9 @@ public class PlayFunctionsMainPage extends Fragment {
         cardManagers = new ArrayList<>();
         SharedPreferences sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
-        competitiveMode = requireArguments().getBoolean("playFunctionsCompetitiveMode");
-        noteNamesWithVoice = requireArguments().getBoolean("noteNamesWithVoice");
+
+        competitiveMode = requireArguments().getBoolean(Options.COMPETITIVE_MODE_KEY);
+        noteNamesWithVoice = requireArguments().getBoolean(Options.VOICE_SYNTH_MODE_KEY);
 
         parentLayout = (requireView().findViewById(R.id.playFunctionsMainPageRootLayout));
         initializeAndAddDefaultCards();

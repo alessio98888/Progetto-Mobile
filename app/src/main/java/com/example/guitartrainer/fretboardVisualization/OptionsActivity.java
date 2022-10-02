@@ -14,6 +14,7 @@ public class OptionsActivity extends AppCompatActivity {
 
     SwitchCompat voiceSynthModeSwitch;
     SwitchCompat fakeGuitarModeSwitch;
+    SwitchCompat competitiveModeSwitch;
     Button saveAndExit;
     Button cancel;
 
@@ -23,15 +24,21 @@ public class OptionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fretboard_visualization_options);
 
         initViews();
-        initVoiceSynthSwitch();
-        initFakeGuitarSwitch();
+        initSwitches();
 
         setAcceptButtonsClickListeners();
+    }
+
+    private void initSwitches() {
+        initVoiceSynthSwitch();
+        initFakeGuitarSwitch();
+        initCompetitiveSwitch();
     }
 
     private void initViews() {
         voiceSynthModeSwitch = findViewById(R.id.fretboard_visualization_answersWithVoiceSwitch);
         fakeGuitarModeSwitch = findViewById(R.id.fretboard_visualization_fakeGuitarSwitch);
+        competitiveModeSwitch = findViewById(R.id.fretboard_visualization_competitiveSwitch);
 
         saveAndExit = findViewById(R.id.fretboard_visualization_options_save_and_exit);
         cancel = findViewById(R.id.fretboard_visualization_options_cancel);
@@ -49,6 +56,12 @@ public class OptionsActivity extends AppCompatActivity {
                 false));
     }
 
+    private void initCompetitiveSwitch() {
+        competitiveModeSwitch.setChecked(getIntent().getBooleanExtra(
+                Options.COMPETITIVE_MODE_KEY,
+                false));
+    }
+
     public void setAcceptButtonsClickListeners(){
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +74,7 @@ public class OptionsActivity extends AppCompatActivity {
             Intent data = new Intent();
             data.putExtra(Options.VOICE_SYNTH_MODE_KEY, voiceSynthModeSwitch.isChecked());
             data.putExtra(Options.FAKE_GUITAR_MODE_KEY, fakeGuitarModeSwitch.isChecked());
+            data.putExtra(Options.COMPETITIVE_MODE_KEY, competitiveModeSwitch.isChecked());
             setResult(RESULT_OK, data);
             finish();
         });

@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -24,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 
 import com.example.guitartrainer.R;
 
@@ -51,15 +49,12 @@ public class MainPage extends Fragment {
     // Option defaults
     private static final boolean DEFAULT_NOTE_NAMES_WITH_VOICE = false;
     private static final boolean DEFAULT_FAKE_GUITAR_MODE = false;
-
-    private static final boolean DEFAULT_ROOT_NAMES_COMPETITIVE_MODE = false;
-    private static final boolean DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE = false;
+    private static final boolean DEFAULT_COMPETITIVE_MODE = false;
 
     // Actual option values
     private boolean actualNoteNamesWithVoice = DEFAULT_NOTE_NAMES_WITH_VOICE;
     private boolean actualFakeGuitarMode = DEFAULT_FAKE_GUITAR_MODE;
-    private boolean actualRootNotesCompetitiveMode = DEFAULT_ROOT_NAMES_COMPETITIVE_MODE;
-    private boolean actualPlayFunctionsCompetitiveMode = DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE;
+    private boolean actualCompetitiveMode = DEFAULT_COMPETITIVE_MODE;
 
     ActivityResultLauncher<Intent> optionsActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -78,11 +73,17 @@ public class MainPage extends Fragment {
                                 DEFAULT_FAKE_GUITAR_MODE
                         );
 
+                        boolean competitiveModeFromOptions = data.getBooleanExtra(
+                                Options.COMPETITIVE_MODE_KEY,
+                                DEFAULT_COMPETITIVE_MODE
+                        );
                         setActualFakeGuitarMode(fakeGuitarModeFromOptions);
                         setActualNoteNamesWithVoice(noteNamesWithVoiceFromOptions);
+                        setActualCompetitiveMode(competitiveModeFromOptions);
                     }
                 }
             });
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.ear_training_guess_function_options_menu, menu);
@@ -100,8 +101,8 @@ public class MainPage extends Fragment {
 
     public void openOptionsActivityForResult() {
         Intent intent = new Intent(getContext(), OptionsActivity.class);
-        intent.putExtra(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
-        intent.putExtra(Options.FAKE_GUITAR_MODE_KEY, actualFakeGuitarMode);
+
+        intent.putExtras(getOptionsBundle());
         optionsActivityResultLauncher.launch(intent);
     }
 
@@ -113,46 +114,20 @@ public class MainPage extends Fragment {
        editor.apply();
     }
 
+    public void setActualCompetitiveMode(boolean actualCompetitiveMode) {
+        this.actualCompetitiveMode = actualCompetitiveMode;
+
+        editor.putBoolean(Options.COMPETITIVE_MODE_KEY,
+                actualCompetitiveMode);
+        editor.apply();
+    }
+
     public void setActualNoteNamesWithVoice(boolean actualNoteNamesWithVoice) {
         this.actualNoteNamesWithVoice = actualNoteNamesWithVoice;
 
         editor.putBoolean(Options.VOICE_SYNTH_MODE_KEY,
                 actualNoteNamesWithVoice);
         editor.apply();
-    }
-
-    public void setActualRootNotesCompetitiveMode(boolean rootNotesCompetitiveMode) {
-        this.actualRootNotesCompetitiveMode = rootNotesCompetitiveMode;
-
-        editor.putBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, actualRootNotesCompetitiveMode);
-        editor.apply();
-        updateRootNamesCardBackground();
-    }
-
-    public void setActualPlayFunctionsCompetitiveMode(boolean playFunctionsCompetitiveMode){
-       this.actualPlayFunctionsCompetitiveMode = playFunctionsCompetitiveMode;
-
-       editor.putBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, actualPlayFunctionsCompetitiveMode);
-       editor.apply();
-       updatePlayFunctionsCardBackground();
-    }
-
-    public void updatePlayFunctionsCardBackground(){
-        ConstraintLayout cardBackground = requireActivity().findViewById(R.id.playFunctionsConstraintLayout);
-        if(actualPlayFunctionsCompetitiveMode){
-            cardBackground.setBackgroundResource(R.color.fretboard_visualization_competitive);
-        } else {
-            cardBackground.setBackgroundResource(R.color.fretboard_visualization_not_competitive);
-        }
-    }
-
-    public void updateRootNamesCardBackground(){
-        ConstraintLayout cardBackground = requireActivity().findViewById(R.id.rootNotesVisualizationCostraintLayout);
-        if(actualRootNotesCompetitiveMode){
-            cardBackground.setBackgroundResource(R.color.fretboard_visualization_competitive);
-        } else {
-            cardBackground.setBackgroundResource(R.color.fretboard_visualization_not_competitive);
-        }
     }
 
     @Override
@@ -162,10 +137,7 @@ public class MainPage extends Fragment {
 
         setActualNoteNamesWithVoice(sharedPref.getBoolean(Options.VOICE_SYNTH_MODE_KEY, DEFAULT_NOTE_NAMES_WITH_VOICE));
         setActualFakeGuitarMode(sharedPref.getBoolean(Options.FAKE_GUITAR_MODE_KEY, DEFAULT_FAKE_GUITAR_MODE));
-        setActualRootNotesCompetitiveMode(sharedPref.getBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, DEFAULT_ROOT_NAMES_COMPETITIVE_MODE));
-        setActualPlayFunctionsCompetitiveMode(sharedPref.getBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, DEFAULT_PLAY_FUNCTIONS_COMPETITIVE_MODE));
-
-        updateRootNamesCardBackground();
+        setActualCompetitiveMode(sharedPref.getBoolean(Options.COMPETITIVE_MODE_KEY, DEFAULT_COMPETITIVE_MODE));
 
         initRootNotesButton();
         initPlayFunctionsButton();
@@ -179,22 +151,8 @@ public class MainPage extends Fragment {
         rootNotesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
-                bundle.putBoolean(Options.FAKE_GUITAR_MODE_KEY, actualFakeGuitarMode);
-                bundle.putBoolean(Options.ROOT_NOTES_COMPETITIVE_MODE_KEY, actualRootNotesCompetitiveMode);
-
                 Navigation.findNavController(view).navigate(
-                        R.id.action_fretboardVisualizationMainPage2_to_fretboardVisualizationRootNotesTrainer, bundle);
-            }
-        });
-
-
-        ImageView rootNotesSettingsButton = requireActivity().findViewById(R.id.rootNotesVisualizationSettings);
-        rootNotesSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showRootNotesSettingsPopupMenu(rootNotesSettingsButton);
+                        R.id.action_fretboardVisualizationMainPage2_to_fretboardVisualizationRootNotesTrainer, getOptionsBundle());
             }
         });
     }
@@ -205,79 +163,20 @@ public class MainPage extends Fragment {
         playFunctionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
-                bundle.putBoolean(Options.PLAY_FUNCTIONS_COMPETITIVE_MODE_KEY, actualPlayFunctionsCompetitiveMode);
-
                 Navigation.findNavController(view).navigate(
-                        R.id.action_fretboardVisualizationMainPage2_to_playFunctionsMainPage, bundle);
-            }
-        });
-
-
-        ImageView playFunctionSettingsButton = requireActivity().findViewById(R.id.playFunctionsVisualizationSettings);
-        playFunctionSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPlayFunctionSettingsPopupMenu(playFunctionSettingsButton);
+                        R.id.action_fretboardVisualizationMainPage2_to_playFunctionsMainPage, getOptionsBundle());
             }
         });
     }
 
-    private void showPlayFunctionSettingsPopupMenu(View v){
-        PopupMenu popup = new PopupMenu(requireActivity(), v);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.fretboard_visualization_play_functions_button_menu, popup.getMenu());
-
-        MenuItem competitiveModeTitle = popup.getMenu().findItem(R.id.playFunctionsCompetitiveModeMenuText);
-        String title;
-        if(actualPlayFunctionsCompetitiveMode){
-            title = getResources().getString(R.string.disableRootNotesCompetitiveMode);
-        } else {
-            title = getResources().getString(R.string.enableRootNotesCompetitiveMode);
-        }
-        competitiveModeTitle.setTitle(title);
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.playFunctionsCompetitiveModeMenuText) {
-                    setActualPlayFunctionsCompetitiveMode(!actualPlayFunctionsCompetitiveMode);
-                }
-                return false;
-            }
-        });
-        popup.show();
+    public Bundle getOptionsBundle(){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, actualNoteNamesWithVoice);
+        bundle.putBoolean(Options.FAKE_GUITAR_MODE_KEY, actualFakeGuitarMode);
+        bundle.putBoolean(Options.COMPETITIVE_MODE_KEY, actualCompetitiveMode);
+        return bundle;
     }
 
-    private void showRootNotesSettingsPopupMenu(View v) {
-        PopupMenu popup = new PopupMenu(requireActivity(), v);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.fretboard_visualization_root_notes_button_menu, popup.getMenu());
-
-        MenuItem competitiveModeTitle = popup.getMenu().findItem(R.id.rootNotesCompetitiveModeMenuText);
-        String title;
-        if(actualRootNotesCompetitiveMode){
-            title = getResources().getString(R.string.disableRootNotesCompetitiveMode);
-        } else {
-            title = getResources().getString(R.string.enableRootNotesCompetitiveMode);
-        }
-        competitiveModeTitle.setTitle(title);
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.rootNotesCompetitiveModeMenuText) {
-                    setActualRootNotesCompetitiveMode(!actualRootNotesCompetitiveMode);
-                }
-                return false;
-            }
-        });
-        popup.show();
-
-    }
     public void overrideBackButtonBehaviour() {
         // Lines necessary in order to set the key listener
         this.getView().setFocusableInTouchMode(true);

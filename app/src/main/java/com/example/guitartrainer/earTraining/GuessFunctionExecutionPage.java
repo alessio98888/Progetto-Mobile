@@ -59,6 +59,7 @@ public class GuessFunctionExecutionPage extends Fragment {
     private ArrayList<MusicalNote.MusicalNoteName> rootNotesNames;
     private MusicalProgression.MusicalProgressionId progressionId;
     private MusicalScale.ScaleMode scaleMode;
+    private ArrayList<Integer> functionsToPlay;
 
     private int round = 0;
     private final int MAX_ROUND = 3;
@@ -132,6 +133,18 @@ public class GuessFunctionExecutionPage extends Fragment {
                 return false;
             }
         });
+        earTrainingOctaveOptionEnum = OctaveOption.EarTrainingOctaveOptionEnum.values()[
+                getArguments().getInt("ear_training_option_index")];
+
+        scaleMode = MusicalScale.ScaleMode.values()[
+                getArguments().getInt("scaleMode")];
+
+        functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
+
+        cardUniqueId = getArguments().getString("cardUniqueId");
+
+        levelType = GuessFunctionLevel.LevelType.values()[
+                getArguments().getInt("levelType")];
         setTextViews();
         setAnswerButtons();
         setRepeatButtons();
@@ -146,16 +159,7 @@ public class GuessFunctionExecutionPage extends Fragment {
             initTextToSpeech();
         }
 
-        earTrainingOctaveOptionEnum = OctaveOption.EarTrainingOctaveOptionEnum.values()[
-                getArguments().getInt("ear_training_option_index")];
 
-        scaleMode = MusicalScale.ScaleMode.values()[
-                getArguments().getInt("scaleMode")];
-
-        cardUniqueId = getArguments().getString("cardUniqueId");
-
-        levelType = GuessFunctionLevel.LevelType.values()[
-                getArguments().getInt("levelType")];
 
         if (!automaticAnswersWithVoice) {
             setScoreStats(0, 0, 0);
@@ -536,6 +540,14 @@ public class GuessFunctionExecutionPage extends Fragment {
         button = getView().findViewById(R.id.button7);
         answerButtons.add(button);
 
+        for(int i=answerButtons.size()-1; i>=0; i--) {
+            int function = i+1;
+            if(!functionsToPlay.contains(function)){
+                answerButtons.get(i).setVisibility(View.GONE);
+                answerButtons.remove(i);
+            }
+        }
+
     }
 
     public void setAnswerButtonListeners(){
@@ -609,7 +621,7 @@ public class GuessFunctionExecutionPage extends Fragment {
     public MusicalScaleNote getNextNoteToGuess(){
 
         MusicalScaleNote scaleNote = MusicalScale.getRandomScaleNote(
-                currentProgressionToPlay.getRootNote(), scaleMode);
+                currentProgressionToPlay.getRootNote(), scaleMode, functionsToPlay);
 
         int octave = DEFAULT_OCTAVE;
         if (earTrainingOctaveOptionEnum == OctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves) {

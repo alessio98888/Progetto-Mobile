@@ -46,5 +46,8 @@
             android:name="automaticAnswersWithVoice"
             app:argType="boolean"
             android:defaultValue="false" />
+        <argument
+            android:name="functionsToPlay"
+            app:argType="integer[]" />
     </fragment>
 </navigation>

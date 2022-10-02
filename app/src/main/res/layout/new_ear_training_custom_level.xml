@@ -8,12 +8,90 @@
     android:orientation="vertical">
 
 
+    <CheckBox
+        android:id="@+id/earTrainingFunction1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_1"
+        app:layout_constraintEnd_toStartOf="@+id/earTrainingFunction2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_2"
+        app:layout_constraintEnd_toStartOf="@+id/earTrainingFunction3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/earTrainingFunction1"
+        app:layout_constraintTop_toTopOf="@+id/earTrainingFunction1" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_3"
+        app:layout_constraintEnd_toStartOf="@+id/earTrainingFunction4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/earTrainingFunction2"
+        app:layout_constraintTop_toTopOf="@+id/earTrainingFunction1" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/earTrainingFunction3"
+        app:layout_constraintTop_toTopOf="@+id/earTrainingFunction1" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_5"
+        app:layout_constraintEnd_toStartOf="@+id/earTrainingFunction6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/earTrainingFunction1" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_6"
+        app:layout_constraintEnd_toStartOf="@+id/earTrainingFunction7"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/earTrainingFunction5"
+        app:layout_constraintTop_toTopOf="@+id/earTrainingFunction5" />
+
+    <CheckBox
+        android:id="@+id/earTrainingFunction7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/_7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/earTrainingFunction6"
+        app:layout_constraintTop_toTopOf="@+id/earTrainingFunction5" />
+
     <Button
         android:id="@+id/new_custom_level_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add_new_custom_level"
         app:chainUseRtl="false"
+        app:layout_constraintBottom_toBottomOf="@+id/new_custom_level_cancel_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/new_custom_level_cancel_button"
@@ -23,17 +101,17 @@
         android:id="@+id/new_custom_level_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/new_custom_level_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/octavesSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/earTrainingFunction5" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="161dp"
+        android:layout_height="104dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +131,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/root_note"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,7 +164,6 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="@string/scale_mode"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,7 +174,6 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="@string/progression"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,11 +184,20 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="@string/octaves"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressionSpinner" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/functions"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/octavesSpinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

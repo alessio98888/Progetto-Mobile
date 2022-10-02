@@ -35,6 +35,8 @@ import androidx.navigation.Navigation;
 import com.example.guitartrainer.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -272,9 +274,15 @@ public class MainPage extends Fragment {
                 OctaveOption.EarTrainingOctaveOptionEnum.One_Octave);
 
         // DEFAULT 1
-        GuessFunctionLevel default1 = new GuessFunctionLevel(getActivity(),
-                scaleCard, octaveOption, progressionCard,
-                GuessFunctionLevel.LevelType.Default, -1);
+        ArrayList<Integer> functionsToPlay1 = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7));
+        GuessFunctionLevel default1 = new GuessFunctionLevel(
+                getActivity(),
+                scaleCard,
+                octaveOption,
+                progressionCard,
+                functionsToPlay1,
+                GuessFunctionLevel.LevelType.Default,
+                -1);
 
         provider.insertOrUpdateCard(default1.getCardStats());
         default1.setSuccessPerc(provider.getSuccessPerc(default1.getUniqueCardId()), false);
@@ -285,9 +293,15 @@ public class MainPage extends Fragment {
                 OctaveOption.EarTrainingOctaveOptionEnum.Many_Octaves);
 
         // DEFAULT 2
-        GuessFunctionLevel default2 = new GuessFunctionLevel(getActivity(),
-                scaleCard, octaveOption, progressionCard,
-                GuessFunctionLevel.LevelType.Default, -1);
+        ArrayList<Integer> functionsToPlay2 = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7));
+        GuessFunctionLevel default2 = new GuessFunctionLevel(
+                getActivity(),
+                scaleCard,
+                octaveOption,
+                progressionCard,
+                functionsToPlay2,
+                GuessFunctionLevel.LevelType.Default,
+                -1);
 
         provider.insertOrUpdateCard(default2.getCardStats());
         default2.setSuccessPerc(provider.getSuccessPerc(default2.getUniqueCardId()), false);
@@ -317,12 +331,12 @@ public class MainPage extends Fragment {
                     cardManager.getCardMusicalScale().getRootNote().getNoteName().ordinal());
         }
 
-
         Bundle bundle = getEarTrainingBundle(
                 rootNotes,
                 cardManager.getOctaveOption().getOctaveOption(),
                 cardManager.getCardMusicalProgression().getProgressionEnum(),
-                cardManager.getCardMusicalScale().getScaleMode()
+                cardManager.getCardMusicalScale().getScaleMode(),
+                cardManager.getFunctionsToPlay()
         );
 
         bundle.putString("cardUniqueId", cardManager.getUniqueCardId());
@@ -335,7 +349,8 @@ public class MainPage extends Fragment {
     public Bundle getEarTrainingBundle(ArrayList<Integer> rootNotes,
                                        OctaveOption.EarTrainingOctaveOptionEnum earTrainingOption,
                                        MusicalProgression.MusicalProgressionId progressionId,
-                                       MusicalScale.ScaleMode scaleMode) {
+                                       MusicalScale.ScaleMode scaleMode,
+                                       ArrayList<Integer> functionsToPlay) {
         Bundle bundle = new Bundle();
         bundle.putInt("ear_training_option_index",
                 earTrainingOption.ordinal());
@@ -345,9 +360,20 @@ public class MainPage extends Fragment {
         bundle.putInt("musicalProgression", progressionId.ordinal());
         bundle.putInt("scaleMode", scaleMode.ordinal());
 
+        bundle.putIntArray("functionsToPlay", convertIntegers(functionsToPlay));
         bundle.putBoolean("automaticAnswersWithVoice", actualAutomaticAnswersWithVoiceValue);
 
         return bundle;
+    }
+
+    public static int[] convertIntegers(List<Integer> integers)
+    {
+        int[] ret = new int[integers.size()];
+        for (int i=0; i < ret.length; i++)
+        {
+            ret[i] = integers.get(i).intValue();
+        }
+        return ret;
     }
 
     public ArrayList<GuessFunctionLevel> getCardManagers() {

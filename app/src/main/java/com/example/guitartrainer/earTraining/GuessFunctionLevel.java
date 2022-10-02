@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
@@ -27,6 +28,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.example.guitartrainer.ProviderReturn;
+import com.example.guitartrainer.fretboardVisualization.PlayFunctionsLevel;
 import com.example.guitartrainer.metronome.GeneralUtils;
 import com.example.guitartrainer.R;
 
@@ -45,6 +47,8 @@ public class GuessFunctionLevel {
     private static final int SCALE_MODE_INDEX = 1;
     private static final int PROGRESSION_INDEX = 2;
     private static final int OCTAVE_OPTION_INDEX = 3;
+    private static final int FUNCTIONS_LIST_START_INDEX = 4;
+
     private static final int TEXT_MARGIN = 8;
     private static final float OCTAVE_TEXT_V_BIAS = 0.88f;
     private static final float OCTAVE_TEXT_H_BIAS = 0.80f;
@@ -61,6 +65,7 @@ public class GuessFunctionLevel {
     private static final String DEFAULT_NUMBER_OCTAVES_TEXT_COLOR = "#CCFF90";
     private static final String DEFAULT_PROGRESSION_TEXT_COLOR = "#6200EA";
     private static final String DEFAULT_BEST_SCORE_TEXT_COLOR = "#301D1D";
+    private static final String DEFAULT_FUNCTIONS_TEXT_COLOR = "#301D1D";
     private static final String DEFAULT_CARD_BACKGROUND_COLOR = "#DAA300";
     private static final int DEFAULT_MAIN_TITLE_TEXT_SIZE = 20;
     private static final int DEFAULT_NUMBER_OCTAVES_TEXT_SIZE = 20;
@@ -68,6 +73,7 @@ public class GuessFunctionLevel {
     private static final int DEFAULT_BEST_SCORE_TEXT_SIZE = 20;
 
     private TextView bestScoreTextView;
+    private TextView functionsTextView;
     private TextView mainTitleText;
     private TextView progressionText;
     private TextView numberOctavesText;
@@ -75,6 +81,7 @@ public class GuessFunctionLevel {
     private MusicalScale cardMusicalScale;
     private MusicalProgression cardMusicalProgression;
     private OctaveOption octaveOption;
+    private ArrayList<Integer> functionsToPlay;
 
     private LevelType levelType;
 
@@ -92,15 +99,18 @@ public class GuessFunctionLevel {
 
     }
 
-    private void constructorCore(Activity activity, MusicalScale cardMusicalScale,
+    private void constructorCore(Activity activity,
+                                 MusicalScale cardMusicalScale,
                                  OctaveOption octaveOption,
                                  MusicalProgression cardMusicalProgression,
+                                 ArrayList<Integer> functionsToPlay,
                                  LevelType levelType,
                                  int successPerc) {
         this.cardMusicalScale = cardMusicalScale;
         this.cardMusicalProgression = cardMusicalProgression;
         this.octaveOption = octaveOption;
         this.levelType = levelType;
+        this.functionsToPlay = functionsToPlay;
         this.successPerc = successPerc;
         this.activity = activity;
 
@@ -120,10 +130,11 @@ public class GuessFunctionLevel {
     public GuessFunctionLevel(Activity activity, MusicalScale cardMusicalScale,
                               OctaveOption octaveOption,
                               MusicalProgression cardMusicalProgression,
+                              ArrayList<Integer> functionsToPlay,
                               LevelType levelType,
                               int successPerc
     ) {
-        constructorCore(activity, cardMusicalScale, octaveOption, cardMusicalProgression, levelType,
+        constructorCore(activity, cardMusicalScale, octaveOption, cardMusicalProgression, functionsToPlay, levelType,
                 successPerc);
     }
 
@@ -136,9 +147,32 @@ public class GuessFunctionLevel {
                 musicalScale,
                 getEarTrainingOctaveOptionFromCardId(cardId),
                 getMusicalProgressionFromCardId(cardId),
+                getFunctionsToPlayFromCardId(cardId),
                 cardStats.getLevelType(),
                 cardStats.getSuccessPerc()
         );
+    }
+
+    private String getReadableFunctionsToPlay(){
+        StringBuilder readable = new StringBuilder();
+
+        for(Integer i : functionsToPlay){
+            readable.append(i).append("  ");
+        }
+        readable.deleteCharAt(readable.length()-1);
+
+        return readable.toString();
+    }
+
+    private ArrayList<Integer> getFunctionsToPlayFromCardId(String cardId) {
+        calculateSplittedCardIdIfNecessary(cardId);
+
+        ArrayList<Integer> functions = new ArrayList<>();
+
+        for(int i = FUNCTIONS_LIST_START_INDEX; i < splittedCardId.size(); i++){
+            functions.add(splittedCardId.get(i));
+        }
+        return functions;
     }
 
     public CardStats getCardStats() {
@@ -193,15 +227,23 @@ public class GuessFunctionLevel {
     }
 
     public String getUniqueCardId() {
-       String id = "";
-       id+=getCardMusicalScale().getRootNote().getNoteName().ordinal();
-       id+="_";
-       id+=getCardMusicalScale().getScaleMode().ordinal();
-       id+="_";
-       id+=getCardMusicalProgression().getProgressionEnum().ordinal();
-       id+="_";
-       id+=getOctaveOption().getOctaveOption().ordinal();
-       return id;
+       StringBuilder id = new StringBuilder();
+       id.append(getCardMusicalScale().getRootNote().getNoteName().ordinal());
+       id.append("_");
+       id.append(getCardMusicalScale().getScaleMode().ordinal());
+       id.append("_");
+       id.append(getCardMusicalProgression().getProgressionEnum().ordinal());
+       id.append("_");
+       id.append(getOctaveOption().getOctaveOption().ordinal());
+       id.append("_");
+       for(Integer i : getFunctionsToPlay()){
+           id.append(i).append("_");
+       }
+       return id.toString();
+    }
+
+    public ArrayList<Integer> getFunctionsToPlay() {
+        return functionsToPlay;
     }
 
 
@@ -212,9 +254,9 @@ public class GuessFunctionLevel {
     ) {
         addEarTrainingCard(context, parentLayout, cardMusicalScale.toString(),
                 octaveOption.getReadableOctaveOption(),
-                cardMusicalProgression.toString(), bestScoreTextString,
+                cardMusicalProgression.toString(), bestScoreTextString, getReadableFunctionsToPlay(),
                 DEFAULT_MAIN_TITLE_TEXT_COLOR, DEFAULT_NUMBER_OCTAVES_TEXT_COLOR,
-                DEFAULT_PROGRESSION_TEXT_COLOR, DEFAULT_BEST_SCORE_TEXT_COLOR,
+                DEFAULT_PROGRESSION_TEXT_COLOR, DEFAULT_BEST_SCORE_TEXT_COLOR, DEFAULT_FUNCTIONS_TEXT_COLOR,
                 DEFAULT_CARD_BACKGROUND_COLOR, DEFAULT_HEIGHT, DEFAULT_WIDTH, cardAbove);
     }
 
@@ -224,10 +266,12 @@ public class GuessFunctionLevel {
                                        String numberOctavesTextString,
                                        String progressionTextString,
                                        String bestScoreTextString,
+                                       String functionsTextString,
                                        String mainTitleTextColor,
                                        String numberOctavesTextColor,
                                        String progressionTextColor,
                                        String bestScoreTextColor,
+                                       String functionsTextColor,
                                        String cardBackgroundColor,
                                        int height, int width,
                                        CardView cardAbove
@@ -273,6 +317,8 @@ public class GuessFunctionLevel {
         addBestScoreToLayout(internalConstraintLayout, dm, context, bestScoreTextString,
                 bestScoreTextColor);
 
+        addFunctionsToPlayToLayout(internalConstraintLayout, dm, context, functionsTextString,
+                functionsTextColor);
 
         if(this.getLevelType() == LevelType.Custom) {
             // OPTION MENU
@@ -445,6 +491,16 @@ public class GuessFunctionLevel {
                 Spinner scaleModeSpinner = NEW_CUSTOM_CARD_VIEW.findViewById(R.id.scaleModeSpinner);
                 Spinner progressionSpinner = NEW_CUSTOM_CARD_VIEW.findViewById(R.id.progressionSpinner);
                 Spinner octavesSpinner = NEW_CUSTOM_CARD_VIEW.findViewById(R.id.octavesSpinner);
+
+
+                ArrayList<CheckBox> functions = new ArrayList<>();
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction1));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction2));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction3));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction4));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction5));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction6));
+                functions.add(NEW_CUSTOM_CARD_VIEW.findViewById(R.id.earTrainingFunction7));
                 Button newCustomLevelButton = NEW_CUSTOM_CARD_VIEW.findViewById(R.id.new_custom_level_button);
                 Button cancel = NEW_CUSTOM_CARD_VIEW.findViewById(R.id.new_custom_level_cancel_button);
 
@@ -564,6 +620,20 @@ public class GuessFunctionLevel {
                     @Override
                     public void onClick(View view) {
 
+                        // Create array of functions (integers) from checkboxes
+                        ArrayList<Integer> functionsToPlay = new ArrayList<>();
+                        int i = 1;
+                        for(CheckBox c : functions){
+                            if(c.isChecked()){
+                                functionsToPlay.add(i);
+                            }
+                            i+=1;
+                        }
+                        if(functionsToPlay.size() == 0){
+                            for(int function = 1; function <= 7; function++ ){
+                                functionsToPlay.add(function);
+                            }
+                        }
 
                         GuessFunctionLevel newCustomManager = new GuessFunctionLevel(
                                 (Activity) context,
@@ -575,6 +645,7 @@ public class GuessFunctionLevel {
 
                                 new MusicalProgression(ROOT_NAME_SELECTED[0], PROGRESSION_SELECTED[0],
                                         true, SCALE_MODE_SELECTED[0]),
+                                functionsToPlay,
                                 LevelType.Custom,
                                 -1
                         );
@@ -788,5 +859,34 @@ public class GuessFunctionLevel {
         bestScoreTextSet.applyTo(internalConstraintLayout);
     }
 
+    private void addFunctionsToPlayToLayout(ConstraintLayout internalConstraintLayout, DisplayMetrics dm,
+                                            Context context, String functionsTextString,
+                                            String functionsTextColor) {
+        functionsTextView = new TextView(context);
+        functionsTextView.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams functionsLayoutParams = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        functionsTextView.setLayoutParams(functionsLayoutParams);
+
+        functionsTextView.setText(functionsTextString);
+        functionsTextView.setTextColor(Color.parseColor(functionsTextColor));
+
+        functionsTextView.setTextSize(DEFAULT_BEST_SCORE_TEXT_SIZE);
+
+        ConstraintSet functionsTextSet = new ConstraintSet();
+        internalConstraintLayout.addView(functionsTextView);
+        functionsTextSet.clone(internalConstraintLayout);
+        functionsTextSet.connect(functionsTextView.getId(), ConstraintSet.BOTTOM,
+                numberOctavesText.getId(), ConstraintSet.TOP);
+        functionsTextSet.connect(functionsTextView.getId(), ConstraintSet.START,
+                mainTitleText.getId(), ConstraintSet.START);
+        functionsTextSet.connect(functionsTextView.getId(), ConstraintSet.TOP,
+                mainTitleText.getId(), ConstraintSet.BOTTOM);
+        functionsTextSet.connect(functionsTextView.getId(), ConstraintSet.END,
+                numberOctavesText.getId(), ConstraintSet.END);
+        functionsTextSet.applyTo(internalConstraintLayout);
+    }
 
 }
