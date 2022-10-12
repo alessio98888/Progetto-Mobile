@@ -12,14 +12,20 @@
 
     <TextView
         android:id="@+id/noteToPlayText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:maxLines="1"
         android:textColor="#E6D8D8"
-        android:textSize="200sp"
-        app:layout_constraintBottom_toTopOf="@id/fretboard_visualization_root_notes_fragment_container"
+        android:textSize="96sp"
+        app:autoSizeMaxTextSize="200sp"
+        app:autoSizeMinTextSize="30sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@id/fretboard_visualization_fake_guitar_container_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Ab" />
 
     <TextView
@@ -35,7 +41,7 @@
         tools:text="10/20" />
 
     <FrameLayout
-        android:id="@+id/fretboard_visualization_root_notes_fragment_container"
+        android:id="@+id/fretboard_visualization_fake_guitar_container_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

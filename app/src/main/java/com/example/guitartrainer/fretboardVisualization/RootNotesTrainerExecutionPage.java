@@ -64,6 +64,11 @@ public class RootNotesTrainerExecutionPage extends ExecutionPage {
         fakeGuitarMode = getArguments().getBoolean(Options.FAKE_GUITAR_MODE_KEY);
     }
 
+    @Override
+    public void initFakeGuitar() {
+        TextView t = requireActivity().findViewById(R.id.noteToPlayText);
+        //t.setTextSize(30);
+    }
 
 }
 

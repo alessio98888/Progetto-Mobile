@@ -5,34 +5,26 @@
     android:id="@+id/activity_ear_training_guess_function_options_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".earTraining.GuessFunctionOptionsActivity">
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/answersWithVoiceSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:minHeight="48dp"
-        android:text="@string/automatic_answers_with_voice"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.15"
-        app:layout_constraintStart_toStartOf="@+id/voiceSynthTextView"
-        app:layout_constraintTop_toBottomOf="@+id/voiceSynthTextView" />
-
-    <TextView
-        android:id="@+id/voiceSynthTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="@string/voice_synthesizer"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/guess_function_options_activity_title"
-        app:layout_constraintTop_toBottomOf="@+id/guess_function_options_activity_title" />
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="99dp" />
 
     <TextView
         android:id="@+id/guess_function_options_activity_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/guess_function_options_text"
+        android:textColor="#FFFFFF"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/cancel_button_color"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/save_and_exit"

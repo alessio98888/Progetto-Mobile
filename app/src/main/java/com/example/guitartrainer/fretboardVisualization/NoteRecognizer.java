@@ -52,8 +52,6 @@ public class NoteRecognizer extends Thread implements NoteSource{
 
     public NoteRecognizer() {
 
-        initAudioRecord();
-        start();
     }
 
     @Override
@@ -176,6 +174,8 @@ public class NoteRecognizer extends Thread implements NoteSource{
 
     @Override
     public void startSource(){
+
+        initAudioRecord();
         start();
     }
 

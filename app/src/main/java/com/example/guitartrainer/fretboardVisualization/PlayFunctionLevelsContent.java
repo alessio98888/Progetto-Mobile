@@ -111,8 +111,9 @@ public class PlayFunctionLevelsContent extends Fragment {
 
         StringBuilder functionsToPlayString = new StringBuilder();
         for(Integer i : functionsToPlay){
-            functionsToPlayString.append(i).append(" ");
+            functionsToPlayString.append(i).append("  ");
         }
+        functionsToPlayString.deleteCharAt(functionsToPlayString.length()-1);
         functionsToPlayText.setText(functionsToPlayString.toString());
         return view;
     }

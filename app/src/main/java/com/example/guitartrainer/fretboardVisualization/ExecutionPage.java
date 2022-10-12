@@ -44,12 +44,12 @@ public class ExecutionPage extends Fragment implements Observer {
     boolean voiceSynthMode;
     boolean competitiveMode;
     boolean fakeGuitarMode;
+    FrameLayout fakeGuitarFragmentContainer;
 
     MusicalNote.MusicalNoteName noteToPlay;
     TextToSpeech textToSpeech;
     UtteranceProgressListener utteranceProgressListener;
     boolean doneSpeaking;
-
     int resultTime;
 
     NoteSource noteSource;
@@ -61,13 +61,12 @@ public class ExecutionPage extends Fragment implements Observer {
 
         NoteSourceFactory noteSourceFactory = new NoteSourceFactory();
         if(fakeGuitarMode){
-            TextView t = requireActivity().findViewById(R.id.noteToPlayText);
-            t.setTextSize(30);
+            initFakeGuitar();
             requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             noteSource = noteSourceFactory.create(NoteSourceTypes.NoteSourceType.FakeGuitarStandardTuning22Frets);
 
             FrameLayout fakeGuitarFragmentContainer =
-                    requireActivity().findViewById(R.id.fretboard_visualization_root_notes_fragment_container);
+                    requireActivity().findViewById(R.id.fretboard_visualization_fake_guitar_container_container);
 
             requireActivity().getFragmentManager().beginTransaction().
                     add(fakeGuitarFragmentContainer.getId(), (FakeGuitar) noteSource, "someTag2").commit();
@@ -82,6 +81,11 @@ public class ExecutionPage extends Fragment implements Observer {
             initTextToSpeech();
 
         checkPermissionsAndStartGame();
+    }
+
+    public void initFakeGuitar() {
+        TextView t = requireActivity().findViewById(R.id.noteToPlayText);
+        t.setTextSize(30);
     }
 
     @Override
@@ -156,6 +160,7 @@ public class ExecutionPage extends Fragment implements Observer {
     }
 
     public void initGame() {
+        noteSource.startSource();
     }
 
     public void firstThingsToDoAfterGameEnds() {

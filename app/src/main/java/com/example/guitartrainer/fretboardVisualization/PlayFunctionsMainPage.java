@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
+import android.widget.TextView;
 
 import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.GuessFunctionLevel;
@@ -49,6 +50,7 @@ public class PlayFunctionsMainPage extends Fragment {
 
     private boolean competitiveMode;
     private boolean noteNamesWithVoice;
+    private boolean fakeGuitarMode;
 
     private static PlayFunctionsMainPage instance;
     private SharedPreferences.Editor editor;
@@ -74,6 +76,7 @@ public class PlayFunctionsMainPage extends Fragment {
 
         competitiveMode = requireArguments().getBoolean(Options.COMPETITIVE_MODE_KEY);
         noteNamesWithVoice = requireArguments().getBoolean(Options.VOICE_SYNTH_MODE_KEY);
+        fakeGuitarMode = requireArguments().getBoolean(Options.FAKE_GUITAR_MODE_KEY);
 
         parentLayout = (requireView().findViewById(R.id.playFunctionsMainPageRootLayout));
         initializeAndAddDefaultCards();
@@ -85,6 +88,8 @@ public class PlayFunctionsMainPage extends Fragment {
         // Just destroy(finish) activity when back pressed
         overrideBackButtonBehaviour(); // Preventing bug: back pressed after level completion
     }
+
+
 
     public void initializeAndAddDefaultCards() {
         ContentResolver resolver = getActivity().getContentResolver();
@@ -203,10 +208,12 @@ public class PlayFunctionsMainPage extends Fragment {
         bundle.putIntArray("rootNotes", convertIntegers(rootNotes));
         bundle.putInt("scaleMode", cardManager.getMusicalScale().ordinal());
         bundle.putIntArray("functionsToPlay", convertIntegers(cardManager.getFunctionsToPlay()));
-        bundle.putBoolean("automaticAnswersWithVoice", noteNamesWithVoice);
         bundle.putString("cardUniqueId", cardManager.getUniqueCardId());
         bundle.putInt("levelType", cardManager.getLevelType().ordinal());
-        bundle.putBoolean("competitiveMode", competitiveMode);
+
+        bundle.putBoolean(Options.VOICE_SYNTH_MODE_KEY, noteNamesWithVoice);
+        bundle.putBoolean(Options.COMPETITIVE_MODE_KEY, competitiveMode);
+        bundle.putBoolean(Options.FAKE_GUITAR_MODE_KEY, fakeGuitarMode);
 
         Navigation.findNavController(view).navigate(
                 R.id.action_playFunctionsMainPage_to_playFunctionExecutionPage, bundle);

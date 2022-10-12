@@ -5,12 +5,13 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.os.Bundle;
 
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.example.guitartrainer.R;
 import com.example.guitartrainer.earTraining.MusicalNote;
@@ -60,6 +61,7 @@ public class PlayFunctionExecutionPage extends ExecutionPage {
         functionToPlayText = requireView().findViewById(R.id.playFunctionsExecutionFunctionToPlayText);
         scaleModeText = requireView().findViewById(R.id.playFunctionsExecutionScaleMode);
         scaleModeText.setText(scaleMode.toString());
+        fakeGuitarFragmentContainer = requireActivity().findViewById(R.id.fretboard_visualization_fake_guitar_container_container);
     }
 
     @Override
@@ -86,9 +88,7 @@ public class PlayFunctionExecutionPage extends ExecutionPage {
 
     @Override
     public void initWithArguments(){
-        voiceSynthMode = getArguments().getBoolean(
-                "automaticAnswersWithVoice",
-                false);
+
         scaleMode = MusicalScale.ScaleMode.values()[
                 getArguments().getInt("scaleMode")];
 
@@ -103,7 +103,117 @@ public class PlayFunctionExecutionPage extends ExecutionPage {
 
         functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
 
-        competitiveMode = getArguments().getBoolean("competitiveMode");
+        voiceSynthMode = getArguments().getBoolean(
+                Options.VOICE_SYNTH_MODE_KEY,
+                false);
+
+        competitiveMode = getArguments().getBoolean(Options.COMPETITIVE_MODE_KEY);
+
+        fakeGuitarMode = getArguments().getBoolean(Options.FAKE_GUITAR_MODE_KEY);
+    }
+
+    @Override
+    public void initFakeGuitar() {
+        adaptLayoutToLandscape();
+    }
+
+    private void adaptLayoutToLandscape(){
+        TextView rootNoteText = requireActivity().findViewById(R.id.playFunctionsExecutionRootNoteText);
+        TextView scaleText = requireActivity().findViewById(R.id.playFunctionsExecutionScaleMode);
+        TextView functionText = requireActivity().findViewById(R.id.playFunctionsExecutionFunctionToPlayText);
+
+
+        ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.playFunctionsExecutionPageRootLayout);
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+
+        constraintSet.clear(rootNoteText.getId());
+        constraintSet.clear(scaleText.getId());
+        constraintSet.clear(functionText.getId());
+
+        allHeightsToMatchConstraintAllWidthToWrapContent(rootNoteText, scaleText, functionText, constraintSet);
+
+        horizontalChain(rootNoteText, scaleText, constraintSet);
+
+        allBottomsToTopOfFakeGuitar(rootNoteText, scaleText, functionText, constraintSet);
+
+        allTopsToParentTop(rootNoteText, scaleText, functionText, constraintSet);
+
+        toRight(functionText, constraintSet);
+
+        leftToRight(rootNoteText, currentRoundText, constraintSet);
+
+        constraintSet.applyTo(constraintLayout);
+    }
+
+    private void leftToRight(TextView one, TextView other, ConstraintSet constraintSet) {
+        constraintSet.connect(
+                one.getId(),ConstraintSet.LEFT,
+                other.getId(),ConstraintSet.RIGHT,
+                0);
+    }
+
+    private void toRight(TextView view, ConstraintSet constraintSet) {
+        constraintSet.connect(
+                view.getId(),ConstraintSet.RIGHT,
+                R.id.playFunctionsExecutionPageRootLayout,ConstraintSet.RIGHT,
+                0);
+    }
+
+    private void allTopsToParentTop(TextView view1, TextView view2, TextView view3, ConstraintSet constraintSet) {
+        constraintSet.connect(
+                view1.getId(),ConstraintSet.TOP,
+                R.id.playFunctionsExecutionPageRootLayout,ConstraintSet.TOP,
+                0);
+
+        constraintSet.connect(
+                view2.getId(),ConstraintSet.TOP,
+                R.id.playFunctionsExecutionPageRootLayout,ConstraintSet.TOP,
+                0);
+
+        constraintSet.connect(
+                view3.getId(),ConstraintSet.TOP,
+                R.id.playFunctionsExecutionPageRootLayout,ConstraintSet.TOP,
+                0);
+    }
+
+    private void allBottomsToTopOfFakeGuitar(TextView view1, TextView view2, TextView view3, ConstraintSet constraintSet) {
+        constraintSet.connect(
+                view1.getId(),ConstraintSet.BOTTOM,
+                fakeGuitarFragmentContainer.getId(),ConstraintSet.TOP,
+                0);
+
+        constraintSet.connect(
+                view2.getId(),ConstraintSet.BOTTOM,
+                fakeGuitarFragmentContainer.getId(),ConstraintSet.TOP,
+                0);
+
+        constraintSet.connect(
+                view3.getId(),ConstraintSet.BOTTOM,
+                fakeGuitarFragmentContainer.getId(),ConstraintSet.TOP,
+                0);
+    }
+
+    private void horizontalChain(TextView view1, TextView view2, ConstraintSet constraintSet) {
+        constraintSet.createHorizontalChain(
+                ConstraintSet.PARENT_ID, ConstraintSet.LEFT,
+                ConstraintSet.PARENT_ID, ConstraintSet.RIGHT,
+                new int[] {view1.getId(), view2.getId()},
+                null,
+                ConstraintSet.CHAIN_PACKED
+
+        );
+    }
+
+    private void allHeightsToMatchConstraintAllWidthToWrapContent(TextView view1, TextView view2, TextView view3, ConstraintSet constraintSet) {
+        constraintSet.constrainHeight(view1.getId(), ConstraintSet.MATCH_CONSTRAINT);
+        constraintSet.constrainWidth(view1.getId(), ConstraintSet.WRAP_CONTENT);
+
+        constraintSet.constrainHeight(view2.getId(), ConstraintSet.MATCH_CONSTRAINT);
+        constraintSet.constrainWidth(view2.getId(), ConstraintSet.WRAP_CONTENT);
+
+        constraintSet.constrainHeight(view3.getId(), ConstraintSet.MATCH_CONSTRAINT);
+        constraintSet.constrainWidth(view3.getId(), ConstraintSet.WRAP_CONTENT);
     }
 
     @Override
