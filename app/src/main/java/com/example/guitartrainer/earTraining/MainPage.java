@@ -63,10 +63,12 @@ public class MainPage extends Fragment {
 
     // Option defaults
     private final boolean DEFAULT_AUTOMATIC_ANSWERS_WITH_VOICE = false;
-
+    private final float DEFAULT_PROGRESSION_VELOCITY = 1.0f;
 
     // Actual option values
     private boolean actualAutomaticAnswersWithVoiceValue = DEFAULT_AUTOMATIC_ANSWERS_WITH_VOICE;
+    private float actualProgressionVelocity = DEFAULT_PROGRESSION_VELOCITY;
+
     ActivityResultLauncher<Intent> optionsActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -79,14 +81,31 @@ public class MainPage extends Fragment {
                                 "automaticAnswersWithVoice",
                                 DEFAULT_AUTOMATIC_ANSWERS_WITH_VOICE
                         );
-                        setActualAutomaticAnswersWithVoiceValue(automaticWithVoice);
+                        float progressionVelocity = data.getFloatExtra(
+                                Options.PROGRESSION_VELOCITY_KEY,
+                                DEFAULT_PROGRESSION_VELOCITY);
 
-                        editor.putBoolean("automaticAnswersWithVoice",
+                        setActualAutomaticAnswersWithVoiceValue(automaticWithVoice);
+                        setActualProgressionVelocity(progressionVelocity);
+                        editor.putBoolean(
+                                "automaticAnswersWithVoice",
                                 automaticWithVoice);
+                        editor.putFloat(
+                                Options.PROGRESSION_VELOCITY_KEY,
+                                progressionVelocity);
                         editor.apply();
                     }
                 }
             });
+
+    public void setActualAutomaticAnswersWithVoiceValue(boolean actualAutomaticAnswersWithVoiceValue) {
+        this.actualAutomaticAnswersWithVoiceValue = actualAutomaticAnswersWithVoiceValue;
+    }
+
+    public void setActualProgressionVelocity(float actualProgressionVelocity) {
+        this.actualProgressionVelocity = actualProgressionVelocity;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +132,8 @@ public class MainPage extends Fragment {
 
         setActualAutomaticAnswersWithVoiceValue(sharedPref.getBoolean("automaticAnswersWithVoice",
                 DEFAULT_AUTOMATIC_ANSWERS_WITH_VOICE));
-
+        setActualProgressionVelocity(sharedPref.getFloat(Options.PROGRESSION_VELOCITY_KEY,
+                DEFAULT_PROGRESSION_VELOCITY));
 
 
         parentLayout = (getView().findViewById(R.id.earTrainingContentConstraintLayout));
@@ -146,6 +166,7 @@ public class MainPage extends Fragment {
     public void openOptionsActivityForResult() {
         Intent intent = new Intent(getContext(), GuessFunctionOptionsActivity.class);
         intent.putExtra("automaticAnswersWithVoice", actualAutomaticAnswersWithVoiceValue);
+        intent.putExtra(Options.PROGRESSION_VELOCITY_KEY, actualProgressionVelocity);
         optionsActivityResultLauncher.launch(intent);
     }
 
@@ -362,6 +383,7 @@ public class MainPage extends Fragment {
 
         bundle.putIntArray("functionsToPlay", convertIntegers(functionsToPlay));
         bundle.putBoolean("automaticAnswersWithVoice", actualAutomaticAnswersWithVoiceValue);
+        bundle.putFloat(Options.PROGRESSION_VELOCITY_KEY, actualProgressionVelocity);
 
         return bundle;
     }
@@ -380,9 +402,7 @@ public class MainPage extends Fragment {
         return cardManagers;
     }
 
-    public void setActualAutomaticAnswersWithVoiceValue(boolean actualAutomaticAnswersWithVoiceValue) {
-        this.actualAutomaticAnswersWithVoiceValue = actualAutomaticAnswersWithVoiceValue;
-    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

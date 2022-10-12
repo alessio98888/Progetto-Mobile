@@ -49,5 +49,9 @@
         <argument
             android:name="functionsToPlay"
             app:argType="integer[]" />
+        <argument
+            android:name="progressionVelocity"
+            app:argType="float"
+            android:defaultValue="1" />
     </fragment>
 </navigation>

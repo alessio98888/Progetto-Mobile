@@ -60,6 +60,7 @@ public class GuessFunctionExecutionPage extends Fragment {
     private MusicalProgression.MusicalProgressionId progressionId;
     private MusicalScale.ScaleMode scaleMode;
     private ArrayList<Integer> functionsToPlay;
+    private float progressionVelocity;
 
     private int round = 0;
     private final int MAX_ROUND = 3;
@@ -141,6 +142,7 @@ public class GuessFunctionExecutionPage extends Fragment {
 
         functionsToPlay = (ArrayList<Integer>) Arrays.stream(getArguments().getIntArray("functionsToPlay")).boxed().collect(Collectors.toList());
 
+        progressionVelocity = getArguments().getFloat(Options.PROGRESSION_VELOCITY_KEY);
         cardUniqueId = getArguments().getString("cardUniqueId");
 
         levelType = GuessFunctionLevel.LevelType.values()[
@@ -164,7 +166,6 @@ public class GuessFunctionExecutionPage extends Fragment {
         if (!automaticAnswersWithVoice) {
             setScoreStats(0, 0, 0);
             setRepeatButtonListeners();
-            setAnswerButtonListeners();
             giantFunctionNumberText.setVisibility(View.INVISIBLE);
         }
 
@@ -201,7 +202,7 @@ public class GuessFunctionExecutionPage extends Fragment {
                         afd = getContext().getResources().openRawResourceFd(progressionResId);
 
                         progressionPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-
+                        progressionPlayer.setPlaybackParams(progressionPlayer.getPlaybackParams().setSpeed(progressionVelocity));
                         afd.close();
                     } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
@@ -540,6 +541,7 @@ public class GuessFunctionExecutionPage extends Fragment {
         button = getView().findViewById(R.id.button7);
         answerButtons.add(button);
 
+        setAnswerButtonListeners();
         for(int i=answerButtons.size()-1; i>=0; i--) {
             int function = i+1;
             if(!functionsToPlay.contains(function)){

@@ -102,4 +102,5 @@
     <string name="fake_guitar_mode">Fake Guitar Mode</string>
     <string name="competitive_mode">Competitive Mode</string>
     <string name="functions">Functions</string>
+    <string name="progression_playing_speed">Progression Playing Speed</string>
 </resources>

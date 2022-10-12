@@ -10,7 +10,7 @@
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/drawable/j.xml" value="0.3828125" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_ear_training.xml" value="0.2578125" />
-        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_ear_training_guess_function_options.xml" value="0.33" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_ear_training_guess_function_options.xml" value="0.5" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_fretboard_visualization_guess_function_options.xml" value="0.2682291666666667" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_fretboard_visualization_main_page.xml" value="0.33" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/activity_fretboard_visualization_options.xml" value="0.33" />
@@ -42,6 +42,7 @@
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/metronome_table_divider.xml" value="0.26902173913043476" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/new_ear_training_custom_level.xml" value="0.33" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/new_play_function_custom_level.xml" value="0.29528985507246375" />
+        <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/progression_velocity_spinner_text_style.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/save_preset_popup.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/layout/toolbar.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/39340/AndroidStudioProjects/Guitartrainer/app/src/main/res/menu/ear_training_guess_function_card_menu.xml" value="0.2682291666666667" />
