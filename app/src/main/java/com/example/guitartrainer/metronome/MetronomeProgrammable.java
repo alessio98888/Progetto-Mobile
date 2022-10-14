@@ -169,13 +169,16 @@ public class MetronomeProgrammable extends Fragment implements Observer,
 
         fromBpmManager = new EditNumberManager(
                 getView(), R.id.from_bpm_editText, R.id.programmable_metronome_from_minus,
-                R.id.programmable_metronome_from_plus, initialFromBpm, this, MAX_BPM, MIN_BPM);
+                R.id.programmable_metronome_from_plus, initialFromBpm, this, MAX_BPM, MIN_BPM,
+                Metronome.getViewPager());
         toBpmManager = new EditNumberManager(
                 getView(), R.id.to_bpm_editText, R.id.programmable_metronome_to_minus,
-                R.id.programmable_metronome_to_plus, initialToBpm, MAX_BPM, MIN_BPM);
+                R.id.programmable_metronome_to_plus, initialToBpm, MAX_BPM, MIN_BPM,
+                Metronome.getViewPager());
         secondsManager = new EditNumberManager(
                 getView(), R.id.seconds_editText, R.id.programmable_metronome_seconds_minus,
-                R.id.programmable_metronome_seconds_plus, initialSeconds, MAX_SECONDS, MIN_SECONDS);
+                R.id.programmable_metronome_seconds_plus, initialSeconds, MAX_SECONDS, MIN_SECONDS,
+                Metronome.getViewPager());
 
         programmableIncrementBpm = new ProgrammableIncrementBpm(
                 soundPlayerMetronome, fromBpmManager.getNumber(), toBpmManager.getNumber(),

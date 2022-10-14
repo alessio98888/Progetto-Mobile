@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager2.widget.ViewPager2;
+
 /**
  *
  Helps to manage an edit number view with a plus and minus button.
@@ -43,12 +46,14 @@ public class EditNumberManager implements AutoIncrementInterface{
     private final int DEFAULT_REPEAT_DELAY = 60;
     private long repeatDelay = DEFAULT_REPEAT_DELAY;
 
+    private ViewPager2 viewPager;
     private void initCoreNumberManager(View view, int numberEditFieldId, int minusButtonId,
                                        int plusButtonId, int initialNumber, int maxNumber,
-                                       int minNumber){
+                                       int minNumber, ViewPager2 viewPager){
         editNumber = view.findViewById(numberEditFieldId);
         minusButton = view.findViewById(minusButtonId);
         plusButton = view.findViewById(plusButtonId);
+        this.viewPager = viewPager;
         setBounds(minNumber, maxNumber);
         setNumber(initialNumber, true);
         setListeners();
@@ -65,17 +70,17 @@ public class EditNumberManager implements AutoIncrementInterface{
     }
 
     public EditNumberManager(View view, int numberEditFieldId, int minusButtonId,
-                             int plusButtonId, int initialNumber, int maxNumber, int minNumber){
+                             int plusButtonId, int initialNumber, int maxNumber, int minNumber, ViewPager2 viewPager){
         initCoreNumberManager(view, numberEditFieldId, minusButtonId,
-                plusButtonId, initialNumber, maxNumber, minNumber);
+                plusButtonId, initialNumber, maxNumber, minNumber, viewPager);
     }
 
     public EditNumberManager(View view, int numberEditFieldId, int minusButtonId,
                              int plusButtonId, int initialNumber, Observer observer, int maxNumber,
-                             int minNumber){
+                             int minNumber, ViewPager2 viewPager){
         this.observer = observer;
         initCoreNumberManager(view, numberEditFieldId, minusButtonId, plusButtonId,
-                initialNumber, maxNumber, minNumber);
+                initialNumber, maxNumber, minNumber, viewPager);
     }
 
     private void setListeners() {
@@ -107,17 +112,49 @@ public class EditNumberManager implements AutoIncrementInterface{
     }
 
     private boolean plusButtonTouchListener(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP && autoIncrement) {
-            autoIncrement = false;
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if(autoIncrement){
+                autoIncrement = false;
+            }
+            onClickOut();
+
+        } else if(event.getAction() == MotionEvent.ACTION_DOWN){
+            onClickIn();
         }
         return false;
     }
 
-    private boolean minusButtonTouchListener(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP && autoDecrement) {
-            autoDecrement = false;
+    private boolean minusButtonTouchListener(@NonNull MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if(autoDecrement){
+                autoDecrement = false;
+            }
+            onClickOut();
+
+        } else if(event.getAction() == MotionEvent.ACTION_DOWN){
+            onClickIn();
         }
         return false;
+    }
+
+    private void onClickOut(){
+        enableViewPagerSwipe();
+    }
+
+    private void enableViewPagerSwipe(){
+        if(viewPager != null){
+            viewPager.setUserInputEnabled(true);
+        }
+    }
+
+    private void onClickIn(){
+        disableViewPagerSwipe();
+    }
+
+    private void disableViewPagerSwipe(){
+        if(viewPager != null){
+            viewPager.setUserInputEnabled(false);
+        }
     }
 
     private void plusButtonClick() {
@@ -128,11 +165,12 @@ public class EditNumberManager implements AutoIncrementInterface{
         decrementNumber();
     }
 
-    private boolean coreButtonOnLongClick() {
-        REPEAT_UPDATE_HANDLER.post(new RepetitiveUpdater(this));
+    public void incrementNumber(){
+        setNumber(getNumber() + 1, true);
+    }
 
-        // means the event is not consumed. Any other click events will continue to receive notifications.
-        return false;
+    public void decrementNumber(){
+        setNumber(getNumber() - 1, true);
     }
 
     private boolean plusButtonOnLongClick() {
@@ -145,8 +183,14 @@ public class EditNumberManager implements AutoIncrementInterface{
         return coreButtonOnLongClick();
     }
 
-    public void setNumber(int number, boolean updateTextField) {
+    private boolean coreButtonOnLongClick() {
+        REPEAT_UPDATE_HANDLER.post(new RepetitiveUpdater(this));
 
+        // means the event is not consumed. Any other click events will continue to receive notifications.
+        return false;
+    }
+
+    public void setNumber(int number, boolean updateTextField) {
         if (number > maxNumber ) {
             this.number = maxNumber;
             outOfBound = true;
@@ -168,14 +212,6 @@ public class EditNumberManager implements AutoIncrementInterface{
             obsData.updatingClassInstance = this;
             observer.update(obsData);
         }
-    }
-
-    public void incrementNumber(){
-        setNumber(getNumber() + 1, true);
-    }
-
-    public void decrementNumber(){
-        setNumber(getNumber() - 1, true);
     }
 
     public void increment(){

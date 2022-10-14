@@ -16,7 +16,5 @@
         android:foregroundTint="#8000AA8F"
         android:paddingTop="16dp"
         android:paddingBottom="32dp">
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </ScrollView>

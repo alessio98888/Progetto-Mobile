@@ -35,7 +35,9 @@ Alessio Ardu  */
 public class Metronome extends Fragment {
 
     MetronomePagerAdapter metronomePagerAdapter;
-    ViewPager2 viewPager;
+
+
+    static ViewPager2 viewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,7 +58,6 @@ public class Metronome extends Fragment {
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(metronomePagerAdapter);
 
-
         ArrayList<String> metronomeTabNames = new ArrayList<String>();
         metronomeTabNames.add(getResources().getString(R.string.metronome_tab_programmable_metronome));
         metronomeTabNames.add(getResources().getString(R.string.metronome_tab_basic_metronome));
@@ -65,6 +66,10 @@ public class Metronome extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText(metronomeTabNames.get(position))
         ).attach();
+    }
+
+    public static ViewPager2 getViewPager() {
+        return viewPager;
     }
 
     @Override

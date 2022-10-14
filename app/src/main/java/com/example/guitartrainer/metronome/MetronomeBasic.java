@@ -50,7 +50,6 @@ public class MetronomeBasic extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_metronome_basic, container, false);
     }
 
@@ -66,11 +65,9 @@ public class MetronomeBasic extends Fragment{
         metronomeSoundPlayer = new SoundPlayerMetronome( getActivity(), newBpm);
         editNumberManager = new EditNumberManager(getView(), R.id.editBpm,
                 R.id.basic_metronome_minus, R.id.basic_metronome_plus, newBpm,
-                metronomeSoundPlayer, MAX_BPM, MIN_BPM);
+                metronomeSoundPlayer, MAX_BPM, MIN_BPM, Metronome.getViewPager());
         setListeners();
     }
-
-
 
     private void setListeners() {
         playButton.setOnClickListener((View v) -> playButtonClick());
